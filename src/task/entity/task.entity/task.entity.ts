@@ -12,5 +12,5 @@ export class TaskEntity {
     description: string;
 
     @Column()
-    password: string;
+    workspaceId: bigint;
 }
