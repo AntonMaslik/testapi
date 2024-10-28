@@ -12,7 +12,7 @@ export class TaskUpdateRequestDto {
     public description: string;
 
     @IsNumber()
-    public workspace_id: bigint;
+    public workspace_id: number;
 
     @IsBoolean()
     public completed: boolean;

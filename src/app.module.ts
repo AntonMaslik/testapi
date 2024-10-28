@@ -18,6 +18,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
       entities: ['**/entity/*.entity{.ts,.js}'],
       synchronize: true,
       autoLoadEntities: true,
+      dropSchema: true,
     }),
     UserModule,
     TaskModule,

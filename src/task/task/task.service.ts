@@ -7,16 +7,13 @@ import { TaskUpdateRequestDto } from '../dto/task-update-request.dto/task-update
 
 @Injectable()
 export class TaskService {
-    constructor(
-        @InjectRepository(TaskEntity)
-        private taskRepository: Repository<TaskEntity>
-    ){}
+    constructor(@InjectRepository(TaskEntity) private readonly taskRepository: Repository<TaskEntity>) {};
 
     async createTask(task: TaskCreateRequestDto): Promise<void> {
         let newTask = new TaskEntity();
         newTask.name = task.name;
         newTask.description = task.description;
-        newTask.workspace_id = task.workspace_id
+        newTask.workspace_id = task.workspace_id;
         newTask.completed = false;
         newTask = await this.taskRepository.save(newTask)
     }

@@ -12,6 +12,7 @@ export class TaskController {
     @Post()
     public postTask(@Body() task:TaskCreateRequestDto): Promise<void> {
         this.taskServices.createTask(task);
+        console.log(task);
         return new Promise<void>((resolve, reject) => {
             resolve();
         });
