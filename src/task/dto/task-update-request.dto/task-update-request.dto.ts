@@ -2,7 +2,7 @@ import { IsBoolean, IsNumber, IsString, MaxLength } from "class-validator"
 
 export class TaskUpdateRequestDto {
     @IsString()
-    public uuid: string;
+    public id: number;
 
     @IsString()
     @MaxLength(50)

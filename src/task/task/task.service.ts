@@ -22,20 +22,20 @@ export class TaskService {
         return await this.taskRepository.find();
     }
 
-    async getTaskById(uuid: string): Promise<TaskEntity>{
-        return await this.taskRepository.findOne({where: {uuid: uuid}})
+    async getTaskById(id: number): Promise<TaskEntity>{
+        return await this.taskRepository.findOne({where: {id: id}})
     }
 
     async updateTask(task: TaskUpdateRequestDto): Promise<void>{
-        let taskEntity = await this.taskRepository.findOne({where: {uuid: task.uuid}})
+        let taskEntity = await this.taskRepository.findOne({where: {id: task.id}})
         taskEntity.name = task.name==null?taskEntity.name:task.name;
         taskEntity.description = task.description==null?taskEntity.description:task.description;
         taskEntity.workspace_id = task.workspace_id==null?taskEntity.workspace_id:task.workspace_id;
         taskEntity.completed = task.completed==null?taskEntity.completed:task.completed;
     }
 
-    async deleteTask(uuid: string): Promise<void>{
-        const task = await this.taskRepository.findOne({where: {uuid: uuid}});
+    async deleteTask(id: number): Promise<void>{
+        const task = await this.taskRepository.findOne({where: {id: id}});
         await this.taskRepository.remove(task);
     }
 }

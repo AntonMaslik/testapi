@@ -19,8 +19,8 @@ export class TaskController {
     }
 
     @Get()
-    public getTask(@Body('uuid') uuid: string): Promise<TaskEntity> {
-        return this.taskServices.getTaskById(uuid);
+    public getTask(@Body('id') id: number): Promise<TaskEntity> {
+        return this.taskServices.getTaskById(id);
     }
 
     @Get('/all')
@@ -29,8 +29,8 @@ export class TaskController {
     }
 
     @Delete()
-    public deleteTask(@Body('uuid') uuid: string): Promise<void> {
-        this.taskServices.deleteTask(uuid);
+    public deleteTask(@Body('id') id: number): Promise<void> {
+        this.taskServices.deleteTask(id);
         return new Promise<void>((resolve, reject) => {
             resolve();
         })
