@@ -4,14 +4,14 @@ export class TaskCreateRequestDto {
 
     @IsString()
     @MaxLength(50)
-    public name: string;
+    name: string;
 
     @IsString()
-    public description: string;
+    description: string;
 
     @IsNumber()
-    public workspace_id: number;
+    workspace_id: number;
 
     @IsBoolean()
-    public completed: boolean;
+    completed: boolean;
 }

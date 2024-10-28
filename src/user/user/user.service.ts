@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '../entity/user.entity/user.entity';
+import { UserEntity } from '../entity/user.entity';
 import { Repository } from 'typeorm'
-import { UserCreateRequestDto } from '../dto/user-create-request.dto/user-create-request.dto';
+import { UserCreateRequestDto } from '../dto/user-create-request.dto';
 
 @Injectable()
 export class UserService {
@@ -34,7 +34,6 @@ export class UserService {
             name: user.name,
             email: user.email,
             password: user.password,
-            workspaces: user.workspaces
         });
         return newUser
     }

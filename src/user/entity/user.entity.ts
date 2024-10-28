@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm'
 
 @Entity('users')
 export class UserEntity {
@@ -13,7 +13,4 @@ export class UserEntity {
 
     @Column()
     password: string;
-
-    @Column()
-    workspaces: [number];
 }

@@ -11,7 +11,4 @@ export class UserCreateRequestDto {
     @IsNotEmpty()
     @MinLength(6)
     password: string
-
-    @IsArray()
-    workspaces: [number]
 }

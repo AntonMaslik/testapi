@@ -15,7 +15,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
       username: 'testuser',
       password: 'testpass',
       database: 'testapi',
-      entities: ['**/entity/*.entity{.ts,.js}'],
+      entities: ['entity/*.entity{.ts,.js}'],
       synchronize: true,
       autoLoadEntities: true,
       dropSchema: true,
