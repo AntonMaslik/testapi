@@ -1,4 +1,4 @@
-import { IsNumber, IsString, MaxLength } from "class-validator"
+import { IsBoolean, IsNumber, IsString, MaxLength } from "class-validator"
 
 export class TaskCreateRequestDto {
 
@@ -10,5 +10,8 @@ export class TaskCreateRequestDto {
     public description: string;
 
     @IsNumber()
-    public workspaceId: bigint;
+    public workspace_id: bigint;
+
+    @IsBoolean()
+    public completed: boolean;
 }

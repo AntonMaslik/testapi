@@ -1,7 +1,9 @@
-import { IsNumber, IsString, MaxLength } from "class-validator"
+import { IsBoolean, IsNumber, IsString, MaxLength } from "class-validator"
 
 export class TaskUpdateRequestDto {
-    
+    @IsString()
+    public uuid: string;
+
     @IsString()
     @MaxLength(50)
     public name: string;
@@ -10,5 +12,8 @@ export class TaskUpdateRequestDto {
     public description: string;
 
     @IsNumber()
-    public workspaceId: bigint;
+    public workspace_id: bigint;
+
+    @IsBoolean()
+    public completed: boolean;
 }

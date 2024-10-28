@@ -12,5 +12,8 @@ export class TaskEntity {
     description: string;
 
     @Column()
-    workspaceId: bigint;
+    workspace_id: bigint;
+
+    @Column()
+    completed: boolean;
 }
