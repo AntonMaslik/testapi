@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './user/user.module';
-import { TaskModule } from './task/task.module';
-import { WorkspaceModule } from './workspace/workspace.module';
+import { UserModule } from './users/user.module';
+import { TaskModule } from './tasks/task.module';
+import { WorkspaceModule } from './workspaces/workspace.module';
 
 @Module({
   imports: [
