@@ -11,4 +11,6 @@ export class UserCreateRequestDto {
     @IsNotEmpty()
     @MinLength(6)
     password: string
+
+    admin: boolean = false;
 }

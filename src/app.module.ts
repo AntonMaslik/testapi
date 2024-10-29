@@ -6,20 +6,25 @@ import { UserModule } from './users/user.module';
 import { TaskModule } from './tasks/task.module';
 import { WorkspaceModule } from './workspaces/workspace.module';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'testuser',
-      password: 'testpass',
-      database: 'testapi',
-      entities: ['entity/*.entity{.ts,.js}'],
-      synchronize: true,
-      autoLoadEntities: true,
-      dropSchema: true,
+    ConfigModule.forRoot({ envFilePath: `.env` }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('POSTGRES_HOST'),
+        port: +configService.get<number>('POSTGRES_PORT'),
+        username: configService.get<string>('POSTGRES_USER'),
+        password: configService.get<string>('POSTGRES_PASSWORD'),
+        database: configService.get<string>('POSTGRES_DATABASE'),
+        entities: ['entity/*.entity{.ts,.js}'],
+        autoLoadEntities: true,
+        synchronize: true
+      }),
+      inject: [ConfigService]
     }),
     UserModule,
     TaskModule,
