@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsString, MaxLength } from "class-validator"
+import {IsNotEmpty, IsNumber} from "class-validator"
 
 export class TaskPositionUpdateDto {
 
