@@ -51,4 +51,14 @@ export class UserService {
         await this.usersRepository.softRemove(user);
         return user;
     }
+
+    async refreshToken(id: number, token: string){
+        let user = await this.usersRepository.findOne({
+            where: {
+                id: id
+            }
+        })
+        user.refreshToken = token
+        await this.usersRepository.save(user);
+    }  
 }
