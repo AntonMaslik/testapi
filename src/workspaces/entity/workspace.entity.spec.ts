@@ -1,4 +1,4 @@
-import { Workspace } from './workspace';
+import { Workspace } from './workspace.entity';
 
 describe('Workspace', () => {
   it('should be defined', () => {
