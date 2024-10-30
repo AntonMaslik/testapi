@@ -1,35 +1,22 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt} from 'passport-jwt'
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserEntity } from '../../users/entity/user.entity';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+
+type JwtPayload = {
+  sub: number;
+  username: string;
+};
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
-  ) {
+export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
+  constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: process.env.JWT_ACCESS_SECRET,
     });
   }
 
-  async validate(payload) {
-    const { id } = payload;
-
-    const user = await this.usersRepository.findOne({
-      where: {
-        id: id,
-      },
-    });
-
-    if (!user) {
-      throw new UnauthorizedException('Login first to access this endpoint.');
-    }
-
-    return user;
+  validate(payload: JwtPayload) {
+    return payload;
   }
 }

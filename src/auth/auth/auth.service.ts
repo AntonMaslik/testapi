@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../../users/entity/user.entity';
@@ -6,6 +6,8 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from '../dto/sign-up-dto';
 import { UserService } from 'src/users/user/user.service';
+import { ConfigService } from '@nestjs/config';
+import { SignInDto } from '../dto/sign-in-dto';
 
 @Injectable()
 export class AuthService {
@@ -14,46 +16,96 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
     private jwtService: JwtService,
+    private usersService: UserService,
+    private configService: ConfigService,
   ) {}
 
-  async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
-    const { name, email, password } = signUpDto;
+  async signUp(signUpDto: SignUpDto): Promise<{accessToken, refreshToken}>{
+    const hashedPassword = await bcrypt.hash(signUpDto.password, 10);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const userExists = await this.usersService.getUserByEmail(
+      signUpDto.email
+    )
+    if (userExists){
+      throw new BadRequestException("User already exists")
+    }
 
-    const user = await this.usersRepository.create({
-      name,
-      email,
+    const newUser = await this.usersService.create({
+      email: signUpDto.email,
+      name: signUpDto.name,
       password: hashedPassword,
-    });
+      refreshToken: null
+    })
 
-    await this.usersRepository.save(user);
-
-    const token = this.jwtService.sign({ id: user.id });
-
-    return { token };
+    const tokens = await this.getTokens(newUser.id, newUser.name)
+    await this.updateRefreshToken(newUser.id, tokens.refreshToken);
+    return tokens
   }
 
-  async signIn(SignInDto): Promise<{ token: string }> {
-    const { email, password } = SignInDto;
+  async signIn(data: SignInDto) {
+    const user = await this.usersService.getUserByEmail(data.email);
+    if (!user) throw new BadRequestException('User does not exist');
+    const passwordMatches = await bcrypt.compare(data.password, user.password);
+    if (!passwordMatches)
+      throw new BadRequestException('Password is incorrect');
+    const tokens = await this.getTokens(user.id, user.name);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return tokens;
+  }
 
-    const user = await this.usersRepository.findOne({
-      where: { email },
+  async logout(userId: number) {
+    return this.usersRepository.update(userId, { refreshToken: null });
+  }
+
+  async updateRefreshToken(id: number, refreshToken: string) {
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.usersRepository.update(id, {
+      refreshToken: hashedRefreshToken,
     });
+  }
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
-    }
+  async refreshTokens(userId: number, refreshToken: string) {
+    const user = await this.usersService.getUserById(userId);
+    if (!user || !user.refreshToken)
+      throw new ForbiddenException('Access Denied');
+    const refreshTokenMatches = await bcrypt.compare(
+      refreshToken,
+      user.refreshToken,
+    );
+    if (!refreshTokenMatches) throw new ForbiddenException('Access Denied');
+    const tokens = await this.getTokens(user.id, user.name);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
+    return tokens;
+  }
 
-    const isPasswordMatched = await bcrypt.compare(password, user.password);
+  async getTokens(userId: number, username: string) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(
+        {
+          sub: userId,
+          username,
+        },
+        {
+          secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+          expiresIn: '15m',
+        },
+      ),
+      this.jwtService.signAsync(
+        {
+          sub: userId,
+          username,
+        },
+        {
+          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+          expiresIn: '7d',
+        },
+      ),
+    ]);
 
-    if (!isPasswordMatched) {
-      throw new UnauthorizedException('Invalid email or password');
-    }
-
-    const token = this.jwtService.sign({ id: user.id });
-
-    return { token };
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
   
 }
