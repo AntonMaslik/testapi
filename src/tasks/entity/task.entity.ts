@@ -17,4 +17,7 @@ export class TaskEntity extends CommonEntity {
 
     @Column()
     completed: boolean;
+
+    @Column()
+    position: number;
 }

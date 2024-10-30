@@ -5,6 +5,8 @@ import { TaskEntity } from '../entity/task.entity';
 import { TaskUpdateRequestDto } from '../dto/task-update-request.dto';
 import { UseGuards } from '@nestjs/common';
 import { RefreshTokenGuard } from 'src/auth/guards/refreshToken.guard';
+import { TaskPositionUpdateDto } from '../dto/task-position-update.dto';
+import { UpdateResult } from 'typeorm'
 
 
 @Controller('tasks')
@@ -14,12 +16,8 @@ export class TaskController {
 
     @UseGuards(RefreshTokenGuard)
     @Post()
-    postTask(@Body() task:TaskCreateRequestDto): Promise<void> {
-        this.taskServices.createTask(task);
-        console.log(task);
-        return new Promise<void>((resolve, reject) => {
-            resolve();
-        });
+    postTask(@Body() task:TaskCreateRequestDto): Promise<TaskEntity> {
+        return this.taskServices.createTask(task);
     }
     
     @UseGuards(RefreshTokenGuard)
@@ -47,6 +45,13 @@ export class TaskController {
     @Put(':id')
     updateTask(@Body() task: TaskUpdateRequestDto): Promise<TaskEntity> {
        return this.taskServices.updateTask(task);
+       
+    }
+
+    @UseGuards(RefreshTokenGuard)
+    @Put('update-position')
+    updateTaskPosition(@Body() taskPositionUpdateDto: TaskPositionUpdateDto): Promise<UpdateResult> {
+       return this.taskServices.updatePosition(taskPositionUpdateDto.id, taskPositionUpdateDto.position);
        
     }
 
