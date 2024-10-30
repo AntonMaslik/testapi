@@ -1,7 +1,7 @@
 import { UserEntity } from 'src/users/entity/user.entity';
 import {Column, Entity, PrimaryGeneratedColumn, IsNull, ManyToMany, JoinColumn} from 'typeorm'
 
-export class Workspace {
+export class WorkspaceEntity {
     
     @PrimaryGeneratedColumn()
     id: number;
@@ -11,5 +11,8 @@ export class Workspace {
 
     @ManyToMany(() => UserEntity, user => user.id)
     @JoinColumn({name: 'id'})
-    userId: UserEntity
+    userId: number
+
+    @Column()
+    description: string
 }

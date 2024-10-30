@@ -1,7 +1,7 @@
-import { Workspace } from './workspace.entity';
+import { WorkspaceEntity } from './workspace.entity';
 
 describe('Workspace', () => {
   it('should be defined', () => {
-    expect(new Workspace()).toBeDefined();
+    expect(new WorkspaceEntity()).toBeDefined();
   });
 });
