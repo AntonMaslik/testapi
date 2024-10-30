@@ -1,19 +1,44 @@
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { Request } from 'express';
+import { UserCreateRequestDto } from 'src/users/dto/user-create-request.dto';
 import { AuthService } from './auth.service';
-import { Body, Controller, Get, Post, UseGuards, Request} from '@nestjs/common';
 import { SignInDto } from '../dto/sign-in-dto';
-import { SignUpDto } from '../dto/sign-up-dto';
+import { RefreshTokenGuard } from '../guards/refreshToken.guard';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) {}
 
-    @Post('/signup')
-    signUp(@Body() signUpDto: SignUpDto): Promise<{ token: string }> {
-      return this.authService.signUp(signUpDto);
-    }
-  
-    @Post('/signin')
-    signIn(@Body() signInDto: SignInDto): Promise<{ token: string }> {
-      return this.authService.signIn(signInDto);
-    }
+  @Post('signup')
+  signup(@Body() createUserDto: UserCreateRequestDto) {
+    return this.authService.signUp(createUserDto);
+  }
+
+  @Post('signin')
+  signin(@Body() data: SignInDto) {
+    return this.authService.signIn(data);
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @Post('logout')
+  logout(@Req() req: Request) {
+    this.authService.logout(req.user['sub']);
+  }
+
+  @UseGuards(RefreshTokenGuard)
+  @Post('refresh')
+  refreshTokens(@Req() req: Request) {
+    const userId = req.user['sub'];
+    const refreshToken = req.user['refreshToken'];
+    return this.authService.refreshTokens(userId, refreshToken);
+  }
 }

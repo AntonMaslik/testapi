@@ -1,33 +1,35 @@
-import { Body, Controller, Get, Param, Post, Delete, UseGuards, Request, Put, applyDecorators} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Patch, UseGuards, Request, Req} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from '../entity/user.entity';
-import { UserCreateRequestDto } from '../dto/user-create-request.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { request } from 'http';
-
-const JwtGuard = () => applyDecorators(UseGuards(AuthGuard('jwt')))
+import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
+import { RefreshTokenGuard } from 'src/auth/guards/refreshToken.guard';
 
 @Controller('users')
 export class UserController {
     constructor(private readonly UsersService: UserService) {}
 
-    @JwtGuard()
+    @UseGuards(RefreshTokenGuard )
     @Get()
-    async getAllUsers(@Request() request): Promise<UserEntity[]>
+    async getAllUsers(@Req() req): Promise<UserEntity[]>
     {   
         return this.UsersService.getAllUsers()
     }
 
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(RefreshTokenGuard )
     @Get('me')
     async getMe(@Request() request: any){
         return this.UsersService.getUserById(request.user.id);
     }
     
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(RefreshTokenGuard )
     @Get(':id')
-    async getUserById(@Param('id') id: number, @Request() request: any): Promise<UserEntity>{
+    async getById(@Param('id') id: number): Promise<UserEntity>{
         return this.UsersService.getUserById(id)
+    }
+
+    @UseGuards(RefreshTokenGuard)
+    @Patch(':id')
+    async update(@Param('id') id: number, @Body() updateUserDto: UserUpdateRequestDto): Promise<UserEntity>{
+        return this.UsersService.updateUserById(id, updateUserDto)
     }
 }
