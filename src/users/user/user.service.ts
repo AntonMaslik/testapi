@@ -28,30 +28,12 @@ export class UserService {
         throw new NotFoundException('Could not find the user');
     }
 
-    async setNotAdmin(user_id: number): Promise<boolean>{
-        let user = await this.usersRepository.findOne({ where: {id: user_id} })
-        user.admin = false
-        return user.admin
-    }
-
-    async setAdmin(user_id: number){
-        let user = await this.usersRepository.findOne({ where: {id: user_id} })
-        user.admin = true
-        return user.admin
-    }
-
-    async IsAdmin(user_id: number): Promise<boolean> {
-        let user = await this.usersRepository.findOne({ where: {id: user_id} })
-        return user.admin
-    }
-
     async createUser(user: UserCreateRequestDto) {
         const newUser = await this.usersRepository.create(user);
         await this.usersRepository.save({
             name: user.name,
             email: user.email,
             password: user.password,
-            admin: false,
         });
         return newUser
     }
@@ -66,7 +48,7 @@ export class UserService {
             return null;
         }
         
-        await this.usersRepository.remove(user);
+        await this.usersRepository.softRemove(user);
         return user;
     }
 }

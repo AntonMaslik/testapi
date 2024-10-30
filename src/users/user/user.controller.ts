@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Delete, UseGuards, Request, Put} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Delete, UseGuards, Request, Put, applyDecorators} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from '../entity/user.entity';
 import { UserCreateRequestDto } from '../dto/user-create-request.dto';
@@ -6,20 +6,17 @@ import { AuthGuard } from '@nestjs/passport';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { request } from 'http';
 
-
+const JwtGuard = () => applyDecorators(UseGuards(AuthGuard('jwt')))
 
 @Controller('users')
 export class UserController {
     constructor(private readonly UsersService: UserService) {}
 
-    @UseGuards(AuthGuard('jwt'))
+    @JwtGuard()
     @Get()
     async getAllUsers(@Request() request): Promise<UserEntity[]>
     {   
-        if(await this.UsersService.IsAdmin(request.user.id) == true)
-            return this.UsersService.getAllUsers()
-        else
-            throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+        return this.UsersService.getAllUsers()
     }
 
     @UseGuards(AuthGuard('jwt'))
@@ -31,44 +28,6 @@ export class UserController {
     @UseGuards(AuthGuard('jwt'))
     @Get(':id')
     async getUserById(@Param('id') id: number, @Request() request: any): Promise<UserEntity>{
-        if(await this.UsersService.IsAdmin(request.user.id) == true)
-            return this.UsersService.getUserById(id)
-        else
-            throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+        return this.UsersService.getUserById(id)
     }
-
-    @Post()
-    @UseGuards(AuthGuard('jwt'))
-    async createUser(@Body() user: UserCreateRequestDto){
-        return this.UsersService.createUser(user);
-    }
-
-    @UseGuards(AuthGuard('jwt'))
-    @Delete(':id')
-    async deleteById(@Request() request, @Param('id') id: number): Promise<UserEntity> {
-        if(await this.UsersService.IsAdmin(request.user.id) == true)
-            return this.UsersService.deleteById(Number(id));
-        else
-            throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    }
-
-    @UseGuards(AuthGuard('jwt'))
-    @Put('setAdmin')
-    async setAdmin(@Request() request: any): Promise<boolean>{
-        if(this.UsersService.IsAdmin(request.user.id))
-            return this.UsersService.setAdmin(request.user.id)
-        else
-            throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    }
-
-    @UseGuards(AuthGuard('jwt'))
-    @Put('setNotAdmin')
-    async setNotAdmin(@Request() request: any): Promise<boolean>{
-        if(request.user.admin)
-            return this.UsersService.setNotAdmin(request.user.id)
-        else
-            throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    }
-
-    
 }
