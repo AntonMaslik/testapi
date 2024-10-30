@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 import { Body, Controller, Get, Param, Post, Delete, UseGuards } from '@nestjs/common';
+=======
+import { Body, Controller, Get, Param, Post, Patch, UseGuards, Request, Req, Put} from '@nestjs/common';
+>>>>>>> Stashed changes
 import { UserService } from './user.service';
 import { UserEntity } from '../entity/user.entity';
 import { UserCreateRequestDto } from '../dto/user-create-request.dto';
@@ -9,6 +13,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class UserController {
     constructor(private readonly UsersService: UserService) {}
 
+<<<<<<< Updated upstream
     @Get()
     async getAllUsers(): Promise<UserEntity[]>
     {
@@ -30,4 +35,18 @@ export class UserController {
     async deleteById(@Param('id') id: string): Promise<UserEntity> {
         return this.UsersService.deleteById(Number(id));
     }
+=======
+    @UseGuards(RefreshTokenGuard )
+    @Get('me')
+    async getMe(@Request() request: any){
+        return this.UsersService.getUserById(request.user.id);
+    }
+    
+    @UseGuards(RefreshTokenGuard )
+    @Put(':id')
+    async getById(@Param('id') id: number, @Body() userUpdateDto: UserUpdateRequestDto): Promise<UserEntity>{
+        return this.UsersService.updateUserById(id, userUpdateDto)
+    }
+
+>>>>>>> Stashed changes
 }
