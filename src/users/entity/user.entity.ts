@@ -14,6 +14,6 @@ export class UserEntity {
     @Column()
     password: string;
 
-    @Column({ nullable: true })
-    admin: boolean;
+    @Column({nullable: true })
+    refreshToken: string;
 }
