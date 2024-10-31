@@ -1,56 +1,54 @@
-import { Injectable } from '@nestjs/common';
+import { NotFoundException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskEntity } from '../entity/task.entity';
-import { Repository, UpdateResult } from 'typeorm'
+import { Repository, UpdateResult } from 'typeorm';
 import { TaskCreateRequestDto } from '../dto/task-create-request.dto';
 import { TaskUpdateRequestDto } from '../dto/task-update-request.dto';
 
 @Injectable()
 export class TaskService {
-    constructor(@InjectRepository(TaskEntity) private readonly taskRepository: Repository<TaskEntity>) {};
+  constructor(
+    @InjectRepository(TaskEntity)
+    private readonly taskRepository: Repository<TaskEntity>,
+  ) {}
 
-    async createTask(task: TaskCreateRequestDto): Promise<TaskEntity> {
-        const newTask = new TaskEntity();
+  async createTask(task: TaskCreateRequestDto): Promise<TaskEntity> {
+    return this.taskRepository.create(task);
+  }
 
-        newTask.name = task.name;
-        newTask.description = task.description;
-        newTask.workspaceId = task.workspace_id;
-        newTask.completed = false;
-        
-        return this.taskRepository.save(newTask);
+  async getAllTasks(): Promise<TaskEntity[]> {
+    return this.taskRepository.find();
+  }
+
+  async getTaskById(id: number): Promise<TaskEntity> {
+    return this.taskRepository.findOne({ where: { id } });
+  }
+
+  async updateTask(id: number, taskUpdateRequestDto: TaskUpdateRequestDto): Promise<UpdateResult> {
+    return this.taskRepository.update(
+      { id: id },
+      taskUpdateRequestDto
+    )
+  }
+
+  async updatePosition(id: number, position: number): Promise<UpdateResult | NotFoundException> {
+    const task = await this.getTaskById(id);
+
+    if (!task){
+      return new NotFoundException('Workspace or Tasks not found!')
     }
 
-    async getAllTasks(): Promise<TaskEntity[]>{
-        return this.taskRepository.find();
-    }
+    return this.taskRepository.update(
+      task.id,
+      {position},
+    );
+  }
 
-    async getTaskById(id: number): Promise<TaskEntity>{
-        return this.taskRepository.findOne({where: {id: id}})
-    }
+  async deleteTask(id: number): Promise<boolean> {
+    const task = await this.taskRepository.findOne({ where: { id: id } });
 
-    async updateTask(task: TaskUpdateRequestDto): Promise<TaskEntity>{
-        let taskEntity = await this.taskRepository.findOne({where: {id: task.id}})
-        
-        taskEntity.name = task.name==null?taskEntity.name:task.name;
-        taskEntity.description = task.description==null?taskEntity.description:task.description;
-        taskEntity.workspaceId = task.workspace_id==null?taskEntity.workspaceId:task.workspace_id;
-        taskEntity.completed = task.completed==null?taskEntity.completed:task.completed;
+    await this.taskRepository.remove(task);
 
-        return taskEntity;
-    }
-
-    async updatePosition(id: number, position: number): Promise<UpdateResult>{
-        const task = await this.getTaskById(id)
-        return await this.taskRepository.update({
-            position: position,
-        }, task)
-    }
-
-    async deleteTask(id: number): Promise<boolean>{
-        const task = await this.taskRepository.findOne({where: {id: id}});
-        
-        await this.taskRepository.remove(task);
-        
-        return true;
-    }
+    return true;
+  }
 }
