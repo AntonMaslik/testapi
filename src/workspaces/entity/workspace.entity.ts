@@ -1,5 +1,5 @@
 import { UserEntity } from 'src/users/entity/user.entity';
-import {Column, Entity, PrimaryGeneratedColumn, IsNull, ManyToMany, JoinColumn} from 'typeorm'
+import {Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne} from 'typeorm'
 
 export class WorkspaceEntity {
     
@@ -9,7 +9,7 @@ export class WorkspaceEntity {
     @Column()
     name: string;
 
-    @ManyToMany(() => UserEntity, user => user.id)
+    @ManyToOne(() => UserEntity, user => user.id)
     @JoinColumn({name: 'id'})
     userId: number
 

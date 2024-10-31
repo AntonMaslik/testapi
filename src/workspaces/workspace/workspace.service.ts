@@ -1,16 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { WorkspaceEntity } from '../entity/workspace.entity';
-import { Repository } from 'typeorm'
+import { TaskEntity } from 'src/tasks/entity/task.entity';
+import { Repository } from 'typeorm';
 import { CreateWorkspaceDto } from '../dto/create-workspace-dto';
 import { UpdateWorkspaceDto } from '../dto/update-workspace-dto';
-import { TaskEntity } from 'src/tasks/entity/task.entity';
+import { WorkspaceEntity } from '../entity/workspace.entity';
 
 @Injectable()
 export class WorkspaceService {
     constructor(
         @InjectRepository(WorkspaceEntity)
         private workspacesRepository: Repository<WorkspaceEntity>,
+        @InjectRepository(TaskEntity)
         private tasksRepository: Repository<TaskEntity>
     ){}
 
@@ -24,6 +25,11 @@ export class WorkspaceService {
                 id: id
             }
         });
+
+        if(!workspace) {
+            throw new NotFoundException('Workspace not found!')
+        }
+
         return this.workspacesRepository.save({
             ...workspace,
             ...updateWorkspaceDto,
@@ -31,9 +37,9 @@ export class WorkspaceService {
     }
 
     async getWorkspaceById(id: number): Promise<WorkspaceEntity>{
-        return await this.workspacesRepository.findOne({
+        return this.workspacesRepository.findOne({
             where: {
-                id: id
+                id
             }
         })
     }
@@ -44,45 +50,39 @@ export class WorkspaceService {
                 workspaceId: id
             }
         })
-        
-        for(const task of tasks){
-            task.softRemove()
-        }
 
         const workspace = await this.workspacesRepository.findOne({
             where: {
                 id: id
             },
         })
-        return await this.workspacesRepository.softRemove(workspace)
+
+        if(!tasks || !workspace) {
+            throw new NotFoundException('Workspace or Tasks not found!')
+        }
+
+        await this.tasksRepository.softRemove(tasks)
+
+        return this.workspacesRepository.softRemove(workspace)
     }
 
-    async getCountTasks(id: number): Promise<number>{
-        const tasks = await this.tasksRepository.find({
+    async getTasksByWorkspaceId(id: number){
+        return this.tasksRepository.find({
             where: {
                 workspaceId: id
             }
         })
-        return await tasks.length
     }
 
-    async getCountCompleteTasks(id: number): Promise<number>{
-        const tasks = await this.tasksRepository.find({
-            where: {
-                workspaceId: id, 
-                completed: true
-            }
-        })
-        return await tasks.length
-    }
-
-    async getCountNotCompleteTasks(id: number): Promise<number>{
-        const tasks = await this.tasksRepository.find({
-            where: {
-                workspaceId: id, 
-                completed: false
-            }
-        })
-        return await tasks.length
+    async getAllTasks(id: number): Promise<any> {
+        return this.tasksRepository
+        .createQueryBuilder('tasks')
+        .select([
+            'COUNT(CASE WHEN tasks.completed = true THEN 1 END) AS completedCount',
+            'COUNT(CASE WHEN tasks.completed = false THEN 1 END) AS notCompletedCount',
+            'COUNT(tasks.id) AS countTasks',
+        ])
+        .where('tasks.workspaceId = :id', { id: id })
+        .getRawOne();
     }
 }
