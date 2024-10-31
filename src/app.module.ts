@@ -15,11 +15,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('POSTGRES_HOST'),
-        port: +configService.get<number>('POSTGRES_PORT'),
-        username: configService.get<string>('POSTGRES_USER'),
-        password: configService.get<string>('POSTGRES_PASSWORD'),
-        database: configService.get<string>('POSTGRES_DATABASE'),
+        host: configService.getOrThrow<string>('POSTGRES_HOST'),
+        port: +configService.getOrThrow<number>('POSTGRES_PORT'),
+        username: configService.getOrThrow<string>('POSTGRES_USER'),
+        password: configService.getOrThrow<string>('POSTGRES_PASSWORD'),
+        database: configService.getOrThrow<string>('POSTGRES_DATABASE'),
         entities: ['entity/*.entity{.ts,.js}'],
         autoLoadEntities: true,
         synchronize: true
