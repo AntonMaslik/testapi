@@ -13,8 +13,7 @@ export class UserService {
     ){}
 
     async getAllUsers(){
-        const users = this.usersRepository.find();
-        return users
+        return this.usersRepository.find();
     }
 
     async getUserById(id: number){

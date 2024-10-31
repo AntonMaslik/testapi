@@ -8,11 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 type JwtPayload = {
   sub: number;
   username: string;
+  userDb: UserEntity
 };
-
-export interface RequestModel extends Request {
-    userDb: any
-}
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -26,15 +23,15 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  validate(request: RequestModel, payload: JwtPayload) {
-    const foundUser = this.usersRepository.find({ where: {id: payload.sub}})
+  async validate(request: Request, payload: JwtPayload) {
+    const foundUser = await this.usersRepository.findOne({ where: {id: payload.sub}})
 
     if(!foundUser){
       throw new NotFoundException("User not found!")
     }
 
-    request.userDb = foundUser
-    
+    payload.userDb = foundUser
+
     return payload; 
   }
 }
