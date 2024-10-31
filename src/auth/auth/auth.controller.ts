@@ -1,18 +1,17 @@
 import {
   Body,
   Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
   Post,
-  Req,
   UseGuards,
+  Header,
+  Req
 } from '@nestjs/common';
-import { Request } from 'express';
 import { UserCreateRequestDto } from 'src/users/dto/user-create-request.dto';
 import { AuthService } from './auth.service';
 import { SignInDto } from '../dto/sign-in-dto';
 import { RefreshTokenGuard } from '../guards/refreshToken.guard';
+import { Request } from 'express';
+import { UpdateResult } from 'typeorm';
 
 @Controller('auth')
 export class AuthController {
@@ -29,14 +28,15 @@ export class AuthController {
   }
 
   @UseGuards(RefreshTokenGuard)
+  @Header('Authorization', null)
   @Post('logout')
-  logout(@Req() req: Request) {
-    this.authService.logout(req.user['sub']);
+  logout(@Req() req: Request): Promise<UpdateResult>{
+    return this.authService.logout(req.user['sub'])
   }
 
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
-  refreshTokens(@Req() req: Request) {
+  refreshTokens(@Req() req: Request): Promise<{accessToken: string; refreshToken: string}> {
     const userId = req.user['sub'];
     const refreshToken = req.user['refreshToken'];
     return this.authService.refreshTokens(userId, refreshToken);

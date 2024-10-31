@@ -1,6 +1,6 @@
 import { CommonEntity } from "src/common/common.entity";
 import { WorkspaceEntity } from "src/workspaces/entity/workspace.entity";
-import { PrimaryGeneratedColumn, Column, Entity, ManyToOne } from "typeorm";
+import { PrimaryGeneratedColumn, Column, Entity, ManyToOne, JoinColumn} from "typeorm";
 
 @Entity("tasks")
 export class TaskEntity extends CommonEntity {
@@ -20,5 +20,6 @@ export class TaskEntity extends CommonEntity {
     position: number;
 
     @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.id)
+    @JoinColumn({name: 'id'})
     workspaceId: number;
 }

@@ -45,7 +45,7 @@ export class AuthService {
   async signIn(data: SignInDto) {
     const user = await this.usersService.getUserByEmail(data.email);
     if (!user) throw new BadRequestException('User does not exist');
-    const passwordMatches = await bcrypt.compare(data.password, user.password);
+      const passwordMatches = await bcrypt.compare(data.password, user.password);
     if (!passwordMatches)
       throw new BadRequestException('Password is incorrect');
     const tokens = await this.getTokens(user.id, user.name);

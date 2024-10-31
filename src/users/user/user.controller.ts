@@ -2,32 +2,32 @@ import { Body, Controller, Get, Param, Post, Patch, UseGuards, Request, Req} fro
 import { UserService } from './user.service';
 import { UserEntity } from '../entity/user.entity';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
-import { RefreshTokenGuard } from 'src/auth/guards/refreshToken.guard';
+import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 
 @Controller('users')
 export class UserController {
     constructor(private readonly UsersService: UserService) {}
 
-    @UseGuards(RefreshTokenGuard )
+    @UseGuards(AccessTokenGuard)
     @Get()
     async getAllUsers(@Req() req): Promise<UserEntity[]>
     {   
         return this.UsersService.getAllUsers()
     }
 
-    @UseGuards(RefreshTokenGuard )
+    @UseGuards(AccessTokenGuard)
     @Get('me')
     async getMe(@Request() request: any){
         return this.UsersService.getUserById(request.user.id);
     }
     
-    @UseGuards(RefreshTokenGuard )
+    @UseGuards(AccessTokenGuard)
     @Get(':id')
     async getById(@Param('id') id: number): Promise<UserEntity>{
         return this.UsersService.getUserById(id)
     }
 
-    @UseGuards(RefreshTokenGuard)
+    @UseGuards(AccessTokenGuard)
     @Patch(':id')
     async update(@Param('id') id: number, @Body() updateUserDto: UserUpdateRequestDto): Promise<UserEntity>{
         return this.UsersService.updateUserById(id, updateUserDto)

@@ -1,6 +1,7 @@
 import { UserEntity } from 'src/users/entity/user.entity';
-import {Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne} from 'typeorm'
+import {Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, Entity} from 'typeorm'
 
+@Entity("workspaces")
 export class WorkspaceEntity {
     
     @PrimaryGeneratedColumn()

@@ -1,22 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { UserEntity } from 'src/users/entity/user.entity';
+import { Repository} from 'typeorm'
+import { InjectRepository } from '@nestjs/typeorm';
 
 type JwtPayload = {
   sub: number;
   username: string;
 };
 
+export interface RequestModel extends Request {
+    userDb: any
+}
+
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor() {
+  constructor(
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_ACCESS_SECRET,
     });
   }
 
-  validate(payload: JwtPayload) {
-    return payload;
+  validate(request: RequestModel, payload: JwtPayload) {
+    const foundUser = this.usersRepository.find({ where: {id: payload.sub}})
+
+    if(!foundUser){
+      throw new NotFoundException("User not found!")
+    }
+
+    request.userDb = foundUser
+    
+    return payload; 
   }
 }
