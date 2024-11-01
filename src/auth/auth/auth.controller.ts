@@ -1,12 +1,11 @@
-import { Body, Controller, Post, UseGuards, Req, Res } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Res } from '@nestjs/common';
 import { UserCreateRequestDto } from 'src/users/dto/user-create-request.dto';
 import { AuthService } from './auth.service';
 import { SignInDto } from '../dto/sign-in-dto';
-import { RefreshTokenGuard } from '../guards/refreshToken.guard';
-import { Request, Response } from 'express';
+import { RefreshTokenGuard as AccessTokenGuard } from '../guards/refreshToken.guard';
+import { Response } from 'express';
 import { UpdateResult } from 'typeorm';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
-import { UserEntity } from 'src/users/entity/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -15,7 +14,7 @@ export class AuthController {
     @Post('signup')
     async signup(
         @Body() createUserDto: UserCreateRequestDto,
-        @Res() res: Response,
+        @Res({ passthrough: true }) res: Response,
     ) {
         const tokens = await this.authService.signUp(createUserDto);
 
@@ -32,7 +31,10 @@ export class AuthController {
     }
 
     @Post('signin')
-    async signin(@Body() data: SignInDto, @Res() res: Response) {
+    async signin(
+        @Res({ passthrough: true }) res: Response,
+        @Body() data: SignInDto,
+    ): Promise<{ accessToken }> {
         const tokens = await this.authService.signIn(data);
 
         res.cookie('refreshToken', tokens.refreshToken, {
@@ -44,14 +46,13 @@ export class AuthController {
 
         return {
             accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
         };
     }
 
-    @UseGuards(RefreshTokenGuard)
+    @UseGuards(AccessTokenGuard)
     @Post('logout')
     logout(
-        @Res() res: Response,
+        @Res({ passthrough: true }) res: Response,
         @ExtractUser() user: any,
     ): Promise<UpdateResult> {
         res.clearCookie('refreshToken');
@@ -59,12 +60,12 @@ export class AuthController {
         return this.authService.logout(user.id);
     }
 
-    @UseGuards(RefreshTokenGuard)
+    @UseGuards(AccessTokenGuard)
     @Post('refresh')
     async refreshTokens(
         @ExtractUser() user: any,
-        @Res() res: Response,
-    ): Promise<{ accessToken; refreshToken }> {
+        @Res({ passthrough: true }) res: Response,
+    ): Promise<{ accessToken }> {
         const tokens = await this.authService.refreshTokens(
             user.id,
             user.refreshToken,
@@ -79,7 +80,6 @@ export class AuthController {
 
         return {
             accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
         };
     }
 }
