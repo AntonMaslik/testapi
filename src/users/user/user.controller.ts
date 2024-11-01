@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Patch, UseGuards, Request, Req} from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    Patch,
+    UseGuards,
+    Request,
+    Req,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from '../entity/user.entity';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
@@ -10,26 +19,29 @@ export class UserController {
 
     @UseGuards(AccessTokenGuard)
     @Get()
-    async getAllUsers(@Req() req): Promise<UserEntity[]>
-    {   
-        return this.UsersService.getAllUsers()
+    async getAllUsers(@Req() req): Promise<UserEntity[]> {
+        console.log(req.userDb);
+        return this.UsersService.getAllUsers();
     }
 
     @UseGuards(AccessTokenGuard)
     @Get('me')
-    async getMe(@Request() request: any){
+    async getMe(@Request() request: any) {
         return this.UsersService.getUserById(request.user.id);
     }
-    
+
     @UseGuards(AccessTokenGuard)
     @Get(':id')
-    async getById(@Param('id') id: number): Promise<UserEntity>{
-        return this.UsersService.getUserById(id)
+    async getById(@Param('id') id: number): Promise<UserEntity> {
+        return this.UsersService.getUserById(id);
     }
 
     @UseGuards(AccessTokenGuard)
     @Patch(':id')
-    async update(@Param('id') id: number, @Body() updateUserDto: UserUpdateRequestDto): Promise<UserEntity>{
-        return this.UsersService.updateUserById(id, updateUserDto)
+    async update(
+        @Param('id') id: number,
+        @Body() updateUserDto: UserUpdateRequestDto,
+    ): Promise<UserEntity> {
+        return this.UsersService.updateUserById(id, updateUserDto);
     }
 }

@@ -1,14 +1,20 @@
-import { CommonEntity } from "src/common/common.entity";
-import { WorkspaceEntity } from "src/workspaces/entity/workspace.entity";
-import { PrimaryGeneratedColumn, Column, Entity, ManyToOne, JoinColumn} from "typeorm";
+import { CommonEntity } from 'src/common/common.entity';
+import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
+import {
+    PrimaryGeneratedColumn,
+    Column,
+    Entity,
+    ManyToOne,
+    JoinColumn,
+} from 'typeorm';
 
-@Entity("tasks")
+@Entity('tasks')
 export class TaskEntity extends CommonEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    name: string
+    name: string;
 
     @Column()
     description: string;
@@ -20,6 +26,6 @@ export class TaskEntity extends CommonEntity {
     position: number;
 
     @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.id)
-    @JoinColumn({name: 'id'})
+    @JoinColumn({ name: 'id' })
     workspaceId: number;
 }

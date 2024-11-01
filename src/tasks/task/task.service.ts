@@ -7,48 +7,48 @@ import { TaskUpdateRequestDto } from '../dto/task-update-request.dto';
 
 @Injectable()
 export class TaskService {
-  constructor(
-    @InjectRepository(TaskEntity)
-    private readonly taskRepository: Repository<TaskEntity>,
-  ) {}
+    constructor(
+        @InjectRepository(TaskEntity)
+        private readonly taskRepository: Repository<TaskEntity>,
+    ) {}
 
-  async createTask(task: TaskCreateRequestDto): Promise<TaskEntity> {
-    return this.taskRepository.create(task);
-  }
-
-  async getAllTasks(): Promise<TaskEntity[]> {
-    return this.taskRepository.find();
-  }
-
-  async getTaskById(id: number): Promise<TaskEntity> {
-    return this.taskRepository.findOne({ where: { id } });
-  }
-
-  async updateTask(id: number, taskUpdateRequestDto: TaskUpdateRequestDto): Promise<UpdateResult> {
-    return this.taskRepository.update(
-      { id: id },
-      taskUpdateRequestDto
-    )
-  }
-
-  async updatePosition(id: number, position: number): Promise<UpdateResult | NotFoundException> {
-    const task = await this.getTaskById(id);
-
-    if (!task){
-      return new NotFoundException('Workspace or Tasks not found!')
+    async createTask(task: TaskCreateRequestDto): Promise<TaskEntity> {
+        return this.taskRepository.create(task);
     }
 
-    return this.taskRepository.update(
-      task.id,
-      {position},
-    );
-  }
+    async getAllTasks(): Promise<TaskEntity[]> {
+        return this.taskRepository.find();
+    }
 
-  async deleteTask(id: number): Promise<boolean> {
-    const task = await this.taskRepository.findOne({ where: { id: id } });
+    async getTaskById(id: number): Promise<TaskEntity> {
+        return this.taskRepository.findOne({ where: { id } });
+    }
 
-    await this.taskRepository.remove(task);
+    async updateTask(
+        id: number,
+        taskUpdateRequestDto: TaskUpdateRequestDto,
+    ): Promise<UpdateResult> {
+        return this.taskRepository.update({ id: id }, taskUpdateRequestDto);
+    }
 
-    return true;
-  }
+    async updatePosition(
+        id: number,
+        position: number,
+    ): Promise<UpdateResult | NotFoundException> {
+        const task = await this.getTaskById(id);
+
+        if (!task) {
+            return new NotFoundException('Workspace or Tasks not found!');
+        }
+
+        return this.taskRepository.update(task.id, { position });
+    }
+
+    async deleteTask(id: number): Promise<boolean> {
+        const task = await this.taskRepository.findOne({ where: { id: id } });
+
+        await this.taskRepository.remove(task);
+
+        return true;
+    }
 }

@@ -5,10 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TaskEntity } from './entity/task.entity';
 import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
 
-
 @Module({
-  imports: [TypeOrmModule.forFeature([TaskEntity, WorkspaceEntity])],
-  controllers: [TaskController],
-  providers: [TaskService]
+    imports: [TypeOrmModule.forFeature([TaskEntity, WorkspaceEntity])],
+    controllers: [TaskController],
+    providers: [TaskService],
 })
 export class TaskModule {}

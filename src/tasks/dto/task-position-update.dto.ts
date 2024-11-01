@@ -1,12 +1,11 @@
-import {IsNotEmpty, IsNumber} from "class-validator"
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class TaskPositionUpdateDto {
+    @IsNotEmpty()
+    @IsNumber()
+    id: number;
 
     @IsNotEmpty()
     @IsNumber()
-    id: number
-
-    @IsNotEmpty()
-    @IsNumber()
-    position: number
+    position: number;
 }

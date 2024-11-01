@@ -12,77 +12,82 @@ export class WorkspaceService {
         @InjectRepository(WorkspaceEntity)
         private workspacesRepository: Repository<WorkspaceEntity>,
         @InjectRepository(TaskEntity)
-        private tasksRepository: Repository<TaskEntity>
-    ){}
+        private tasksRepository: Repository<TaskEntity>,
+    ) {}
 
-    async createWorkspace(createWorkspaceDto: CreateWorkspaceDto): Promise<WorkspaceEntity>{
-        return this.workspacesRepository.save(createWorkspaceDto)
+    async createWorkspace(
+        createWorkspaceDto: CreateWorkspaceDto,
+    ): Promise<WorkspaceEntity> {
+        return this.workspacesRepository.save(createWorkspaceDto);
     }
 
-    async updateWorkspaceById(id: number, updateWorkspaceDto: UpdateWorkspaceDto): Promise<WorkspaceEntity>{
+    async updateWorkspaceById(
+        id: number,
+        updateWorkspaceDto: UpdateWorkspaceDto,
+    ): Promise<WorkspaceEntity> {
         const workspace = await this.workspacesRepository.findOne({
             where: {
-                id: id
-            }
+                id: id,
+            },
         });
 
-        if(!workspace) {
-            throw new NotFoundException('Workspace not found!')
+        if (!workspace) {
+            throw new NotFoundException('Workspace not found!');
         }
 
         return this.workspacesRepository.save({
             ...workspace,
             ...updateWorkspaceDto,
-        })
+        });
     }
 
-    async getWorkspaceById(id: number): Promise<WorkspaceEntity>{
+    async getWorkspaceById(id: number): Promise<WorkspaceEntity> {
         return this.workspacesRepository.findOne({
             where: {
-                id
-            }
-        })
+                id,
+            },
+        });
     }
 
-    async deleteWorkspaceById(id: number): Promise<WorkspaceEntity>{
+    async deleteWorkspaceById(id: number): Promise<WorkspaceEntity> {
         const tasks = await this.tasksRepository.find({
             where: {
-                workspaceId: id
-            }
-        })
+                workspaceId: id,
+            },
+        });
 
         const workspace = await this.workspacesRepository.findOne({
             where: {
-                id: id
+                id: id,
             },
-        })
+        });
 
-        if(!tasks || !workspace) {
-            throw new NotFoundException('Workspace or Tasks not found!')
+        if (!tasks || !workspace) {
+            throw new NotFoundException('Workspace or Tasks not found!');
         }
 
-        await this.tasksRepository.softRemove(tasks)
+        await this.tasksRepository.softRemove(tasks);
 
-        return this.workspacesRepository.softRemove(workspace)
+        return this.workspacesRepository.softRemove(workspace);
     }
 
-    async getTasksByWorkspaceId(id: number){
+    async getTasksByWorkspaceId(id: number) {
         return this.tasksRepository.find({
             where: {
-                workspaceId: id
-            }
-        })
+                workspaceId: id,
+            },
+        });
     }
 
     async getAllTasks(id: number): Promise<any> {
         return this.tasksRepository
-        .createQueryBuilder('tasks')
-        .select([
-            'COUNT(CASE WHEN tasks.completed = true THEN 1 END) AS completedCount',
-            'COUNT(CASE WHEN tasks.completed = false THEN 1 END) AS notCompletedCount',
-            'COUNT(tasks.id) AS countTasks',
-        ])
-        .where('tasks.workspaceId = :id', { id: id })
-        .getRawOne();
+            .createQueryBuilder('tasks')
+            .select([
+                'COUNT(CASE WHEN tasks.completed = true THEN 1 END) AS completedCount',
+                'COUNT(CASE WHEN tasks.completed = false THEN 1 END) AS notCompletedCount',
+                'COUNT(tasks.id) AS countTasks',
+            ])
+            .where('tasks.workspaceId = :id', { id: id })
+            .getRawOne();
     }
 }

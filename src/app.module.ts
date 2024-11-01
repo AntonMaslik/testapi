@@ -9,29 +9,29 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ envFilePath: `.env` }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.getOrThrow<string>('POSTGRES_HOST'),
-        port: +configService.getOrThrow<number>('POSTGRES_PORT'),
-        username: configService.getOrThrow<string>('POSTGRES_USER'),
-        password: configService.getOrThrow<string>('POSTGRES_PASSWORD'),
-        database: configService.getOrThrow<string>('POSTGRES_DATABASE'),
-        entities: ['entity/*.entity{.ts,.js}'],
-        autoLoadEntities: true,
-        synchronize: true
-      }),
-      inject: [ConfigService]
-    }),
-    UserModule,
-    TaskModule,
-    WorkspaceModule,
-    AuthModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        ConfigModule.forRoot({ envFilePath: `.env` }),
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: (configService: ConfigService) => ({
+                type: 'postgres',
+                host: configService.getOrThrow<string>('POSTGRES_HOST'),
+                port: +configService.getOrThrow<number>('POSTGRES_PORT'),
+                username: configService.getOrThrow<string>('POSTGRES_USER'),
+                password: configService.getOrThrow<string>('POSTGRES_PASSWORD'),
+                database: configService.getOrThrow<string>('POSTGRES_DATABASE'),
+                entities: ['entity/*.entity{.ts,.js}'],
+                autoLoadEntities: true,
+                synchronize: true,
+            }),
+            inject: [ConfigService],
+        }),
+        UserModule,
+        TaskModule,
+        WorkspaceModule,
+        AuthModule,
+    ],
+    controllers: [AppController],
+    providers: [AppService],
 })
 export class AppModule {}

@@ -11,14 +11,19 @@ import { UserService } from 'src/users/user/user.service';
 import { ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([UserEntity]),
-    PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModule.register({})
-  ],
-  providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy, UserService, ConfigService],
-  controllers: [AuthController],
-  exports: [AccessTokenStrategy, PassportModule]
+    imports: [
+        TypeOrmModule.forFeature([UserEntity]),
+        PassportModule.register({ defaultStrategy: 'jwt' }),
+        JwtModule.register({}),
+    ],
+    providers: [
+        AuthService,
+        AccessTokenStrategy,
+        RefreshTokenStrategy,
+        UserService,
+        ConfigService,
+    ],
+    controllers: [AuthController],
+    exports: [AccessTokenStrategy, PassportModule],
 })
 export class AuthModule {}
-
