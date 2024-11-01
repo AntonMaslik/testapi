@@ -1,11 +1,4 @@
-import {
-    PrimaryGeneratedColumn,
-    Column,
-    Entity,
-    BaseEntity,
-    DeleteDateColumn,
-    UpdateDateColumn,
-} from 'typeorm';
+import { BaseEntity, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
 
 export class CommonEntity extends BaseEntity {
     @DeleteDateColumn()
