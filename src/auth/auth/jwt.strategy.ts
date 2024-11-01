@@ -33,10 +33,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
             throw new NotFoundException('User not found!');
         }
 
-        // TODO: Исправить request
-        request.userDb = foundUser;
-
-        console.log(2);
+        payload.userDb = foundUser;
 
         return payload;
     }

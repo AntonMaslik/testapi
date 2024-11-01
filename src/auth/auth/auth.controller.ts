@@ -1,18 +1,12 @@
-import {
-    Body,
-    Controller,
-    Post,
-    UseGuards,
-    Header,
-    Req,
-    Res,
-} from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Req, Res } from '@nestjs/common';
 import { UserCreateRequestDto } from 'src/users/dto/user-create-request.dto';
 import { AuthService } from './auth.service';
 import { SignInDto } from '../dto/sign-in-dto';
 import { RefreshTokenGuard } from '../guards/refreshToken.guard';
 import { Request, Response } from 'express';
 import { UpdateResult } from 'typeorm';
+import { ExtractUser } from 'src/decorators/extractUser.decorator';
+import { UserEntity } from 'src/users/entity/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -25,7 +19,6 @@ export class AuthController {
     ) {
         const tokens = await this.authService.signUp(createUserDto);
 
-        /// TODO: Добавить в sign-in
         res.cookie('refreshToken', tokens.refreshToken, {
             maxAge: 1000 * 60 * 15,
             httpOnly: true,
@@ -39,24 +32,54 @@ export class AuthController {
     }
 
     @Post('signin')
-    signin(@Body() data: SignInDto) {
-        return this.authService.signIn(data);
+    async signin(@Body() data: SignInDto, @Res() res: Response) {
+        const tokens = await this.authService.signIn(data);
+
+        res.cookie('refreshToken', tokens.refreshToken, {
+            maxAge: 1000 * 60 * 15,
+            httpOnly: true,
+            secure: false,
+            signed: false,
+        });
+
+        return {
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+        };
     }
 
     @UseGuards(RefreshTokenGuard)
     @Post('logout')
-    logout(@Req() req: Request, @Res() res: Response): Promise<UpdateResult> {
+    logout(
+        @Res() res: Response,
+        @ExtractUser() user: any,
+    ): Promise<UpdateResult> {
         res.clearCookie('refreshToken');
-        return this.authService.logout(req.user['sub']);
+
+        return this.authService.logout(user.id);
     }
 
     @UseGuards(RefreshTokenGuard)
     @Post('refresh')
-    refreshTokens(
-        @Req() req: Request,
-    ): Promise<{ accessToken: string; refreshToken: string }> {
-        const userId = req.user['sub'];
-        const refreshToken = req.user['refreshToken'];
-        return this.authService.refreshTokens(userId, refreshToken);
+    async refreshTokens(
+        @ExtractUser() user: any,
+        @Res() res: Response,
+    ): Promise<{ accessToken; refreshToken }> {
+        const tokens = await this.authService.refreshTokens(
+            user.id,
+            user.refreshToken,
+        );
+
+        res.cookie('refreshToken', tokens.refreshToken, {
+            maxAge: 1000 * 60 * 15,
+            httpOnly: true,
+            secure: false,
+            signed: false,
+        });
+
+        return {
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+        };
     }
 }
