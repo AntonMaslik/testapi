@@ -5,39 +5,39 @@ import {
     Param,
     Post,
     Put,
-    UseGuards,
-    Request,
-    Req,
     Delete,
 } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
-import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/auth/roles/roles.enum';
 import { CreateWorkspaceDto } from '../dto/create-workspace-dto';
 import { UpdateWorkspaceDto } from '../dto/update-workspace-dto';
+import { AuthGuard } from 'src/decorators/guard.decorators';
 
-// TODO: one decorator (UseGuards)
-
+AuthGuard();
 @Controller('workspaces')
 export class WorkSpaceController {
     constructor(private readonly workspacesService: WorkspaceService) {}
 
+    @Roles(Role.USER)
     @Get(':id')
     getAllTasks(@Param('id') id: number) {
         return this.workspacesService.getAllTasks(id);
     }
 
+    @Roles(Role.USER)
     @Get('tasks/:id')
     getTask(@Param('id') id: number) {
         return this.workspacesService.getTasksByWorkspaceId(id);
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.USER)
     @Post('create')
     createWorkspace(@Body() createWorkspaceDto: CreateWorkspaceDto) {
         return this.workspacesService.createWorkspace(createWorkspaceDto);
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.USER)
     @Put(':id')
     updateWorkspace(
         @Param() id: number,
@@ -49,7 +49,7 @@ export class WorkSpaceController {
         );
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.USER)
     @Delete(':id')
     deleteWorkspace(@Param() id: number) {
         return this.workspacesService.deleteWorkspaceById(id);
