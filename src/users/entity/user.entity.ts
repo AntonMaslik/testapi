@@ -27,7 +27,10 @@ export class UserEntity {
     @Column({ nullable: true })
     refreshToken: string;
 
-    @ManyToMany(() => RolesEntity, (role) => role.users, { cascade: true })
+    @ManyToMany(() => RolesEntity, (role) => role.users, {
+        cascade: true,
+        eager: true,
+    })
     @JoinTable()
     roles: RolesEntity[];
 }

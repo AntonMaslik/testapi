@@ -1,36 +1,13 @@
 import { UserEntity } from 'src/users/entity/user.entity';
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToMany,
-    PrimaryColumn,
-    PrimaryGeneratedColumn,
-    Unique,
-} from 'typeorm';
+import { Column, JoinColumn, ManyToMany, PrimaryColumn, Unique } from 'typeorm';
 
-@Entity('roles')
+@Unique('uniq_role_name', ['roles'])
 export class RolesEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
-
+    @PrimaryColumn()
     @Column()
-    // TODO: rename => name
-    roleName: string;
+    name: string;
 
-    @ManyToMany(() => UserEntity, (user) => user.roles)
+    @ManyToMany(() => UserEntity, (user) => user.roles, { eager: true })
     @JoinColumn()
     users: UserEntity[];
 }
-
-// @Unique('uniq_role_name', ['roles'])
-// export class RolesEntity1 {
-//     @PrimaryColumn()
-//     @Column()
-//     // TODO: rename => name
-//     name: string;
-
-//     @ManyToMany(() => UserEntity, (user) => user.roles)
-//     @JoinColumn()
-//     users: UserEntity[];
-// }
