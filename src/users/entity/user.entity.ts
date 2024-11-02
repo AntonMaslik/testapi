@@ -6,7 +6,7 @@ import {
     JoinTable,
 } from 'typeorm';
 import { RolesEntity } from 'src/auth/roles/roles.entity';
-import { Exclude } from 'class-transformer';
+import { classToPlain, Exclude } from 'class-transformer';
 
 @Entity('users')
 export class UserEntity {
