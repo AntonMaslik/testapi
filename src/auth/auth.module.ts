@@ -9,15 +9,18 @@ import { RefreshTokenStrategy } from './auth/refreshToken.strategy';
 import { AccessTokenStrategy } from './auth/jwt.strategy';
 import { UserService } from 'src/users/user/user.service';
 import { ConfigService } from '@nestjs/config';
+import { RolesEntity } from './roles/roles.entity';
+import { RolesService } from './roles/roles.service';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserEntity]),
+        TypeOrmModule.forFeature([UserEntity, RolesEntity]),
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.register({}),
     ],
     providers: [
         AuthService,
+        RolesService,
         AccessTokenStrategy,
         RefreshTokenStrategy,
         UserService,
