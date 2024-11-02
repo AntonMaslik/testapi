@@ -11,6 +11,7 @@ import { UserService } from 'src/users/user/user.service';
 import { ConfigService } from '@nestjs/config';
 import { RolesEntity } from './roles/roles.entity';
 import { RolesService } from './roles/roles.service';
+import { RolesController } from './roles/roles.controller';
 
 @Module({
     imports: [
@@ -26,7 +27,7 @@ import { RolesService } from './roles/roles.service';
         UserService,
         ConfigService,
     ],
-    controllers: [AuthController],
+    controllers: [AuthController, RolesController],
     exports: [AccessTokenStrategy, PassportModule],
 })
 export class AuthModule {}
