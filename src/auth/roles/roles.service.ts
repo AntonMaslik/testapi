@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { RolesEntity } from './roles.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -23,6 +23,11 @@ export class RolesService {
                 id: roleUpdateDto.userId,
             },
         });
+
+        if (!user) {
+            throw new NotFoundException('User not find!');
+        }
+
         return this.usersRepository.save({
             ...user,
             roles: roleUpdateDto.roles,

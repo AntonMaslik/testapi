@@ -16,7 +16,7 @@ export class WorkspaceEntity {
     name: string;
 
     @ManyToOne(() => UserEntity, (user) => user.id)
-    @JoinColumn({ name: 'id' })
+    @JoinColumn({ name: 'userId' })
     userId: number;
 
     @Column()

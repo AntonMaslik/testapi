@@ -13,8 +13,6 @@ import { SignUpDto } from '../dto/sign-up-dto';
 import { UserService } from 'src/users/user/user.service';
 import { ConfigService } from '@nestjs/config';
 import { SignInDto } from '../dto/sign-in-dto';
-import { RolesService } from '../roles/roles.service';
-import { RolesEntity } from '../roles/roles.entity';
 import { Role } from '../roles/roles.enum';
 
 @Injectable()
@@ -24,10 +22,8 @@ export class AuthService implements OnModuleInit {
         private usersRepository: Repository<UserEntity>,
         private jwtService: JwtService,
         private usersService: UserService,
-        private rolesService: RolesService,
         private configService: ConfigService,
     ) {}
-    private accessTokenSecret: string;
 
     onModuleInit() {
         // this.accessTokenSecret = this.configService.getOrThrow('asda');
