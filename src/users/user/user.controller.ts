@@ -31,7 +31,7 @@ export class UserController {
         return this.UsersService.getUserById(request.user.id);
     }
 
-    @Roles(Role.USER)
+    @Roles(Role.ADMIN)
     @Get(':id')
     async getById(@Param('id') id: number): Promise<UserEntity> {
         return this.UsersService.getUserById(id);
