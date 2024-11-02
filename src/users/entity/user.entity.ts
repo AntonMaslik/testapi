@@ -1,4 +1,5 @@
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
+import { RolesEntity } from 'src/auth/roles/roles.entity';
 
 @Entity('users')
 export class UserEntity {
@@ -8,9 +9,15 @@ export class UserEntity {
     @Column()
     name: string;
 
-    @Column({unique: true})
+    @Column({ unique: true })
     email: string;
 
     @Column()
     password: string;
+
+    @Column({ nullable: true })
+    refreshToken: string;
+
+    @ManyToMany(() => RolesEntity, (role) => role.users)
+    roles: RolesEntity[];
 }

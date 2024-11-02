@@ -1,7 +1,6 @@
-import { IsBoolean, IsNumber, IsString, MaxLength } from "class-validator"
+import { IsBoolean, IsNumber, IsString, MaxLength } from 'class-validator';
 
 export class TaskCreateRequestDto {
-
     @IsString()
     @MaxLength(50)
     name: string;

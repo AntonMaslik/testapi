@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsEmail, MinLength, IsArray } from 'class-validator';
 
-export class UserCreateRequestDto {
+export class UserUpdateRequestDto {
     @IsNotEmpty()
     name: string;
 
