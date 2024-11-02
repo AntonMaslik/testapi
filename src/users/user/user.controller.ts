@@ -4,39 +4,40 @@ import {
     Get,
     Param,
     Patch,
-    UseGuards,
     Request,
     Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from '../entity/user.entity';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
-import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/auth/roles/roles.enum';
+import { AuthGuard } from 'src/decorators/guard.decorators';
 
+@AuthGuard()
 @Controller('users')
 export class UserController {
     constructor(private readonly UsersService: UserService) {}
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.ADMIN)
     @Get()
-    async getAllUsers(@Req() req): Promise<UserEntity[]> {
-        console.log(req.userDb);
+    async getAllUsers(): Promise<UserEntity[]> {
         return this.UsersService.getAllUsers();
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.USER)
     @Get('me')
     async getMe(@Request() request: any) {
         return this.UsersService.getUserById(request.user.id);
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.USER)
     @Get(':id')
     async getById(@Param('id') id: number): Promise<UserEntity> {
         return this.UsersService.getUserById(id);
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.USER)
     @Patch(':id')
     async update(
         @Param('id') id: number,

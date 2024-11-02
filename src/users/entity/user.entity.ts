@@ -1,5 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToMany } from 'typeorm';
+import {
+    Column,
+    Entity,
+    PrimaryGeneratedColumn,
+    ManyToMany,
+    JoinTable,
+} from 'typeorm';
 import { RolesEntity } from 'src/auth/roles/roles.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 export class UserEntity {
@@ -12,12 +19,15 @@ export class UserEntity {
     @Column({ unique: true })
     email: string;
 
+    @Exclude()
     @Column()
     password: string;
 
+    @Exclude()
     @Column({ nullable: true })
     refreshToken: string;
 
-    @ManyToMany(() => RolesEntity, (role) => role.users)
+    @ManyToMany(() => RolesEntity, (role) => role.users, { cascade: true })
+    @JoinTable()
     roles: RolesEntity[];
 }

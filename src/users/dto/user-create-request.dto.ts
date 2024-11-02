@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsEmail, MinLength, IsArray } from 'class-validator';
+import { RolesEntity } from 'src/auth/roles/roles.entity';
 
 export class UserCreateRequestDto {
     @IsNotEmpty()
@@ -13,4 +14,6 @@ export class UserCreateRequestDto {
     password: string;
 
     refreshToken: string;
+
+    roles: RolesEntity[];
 }
