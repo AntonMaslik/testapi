@@ -14,6 +14,8 @@ import { UserService } from 'src/users/user/user.service';
 import { ConfigService } from '@nestjs/config';
 import { SignInDto } from '../dto/sign-in-dto';
 import { RolesService } from '../roles/roles.service';
+import { RolesEntity } from '../roles/roles.entity';
+import { Role } from '../roles/roles.enum';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
@@ -46,11 +48,13 @@ export class AuthService implements OnModuleInit {
             name: signUpDto.name,
             password: hashedPassword,
             refreshToken: null,
-            roles: [],
+            roles: [{ name: Role.USER }],
         });
         const tokens = await this.getTokens(newUser.id, newUser.name);
 
         await this.updateRefreshToken(newUser.id, tokens.refreshToken);
+
+        console.log(newUser);
 
         return tokens;
     }
@@ -125,7 +129,7 @@ export class AuthService implements OnModuleInit {
                     secret: this.configService.getOrThrow<string>(
                         'JWT_ACCESS_SECRET',
                     ),
-                    expiresIn: '15m',
+                    expiresIn: '7d',
                 },
             ),
             this.jwtService.signAsync(

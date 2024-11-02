@@ -20,7 +20,7 @@ export class RolesGuard implements CanActivate {
         );
 
         for (const role of user.roles) {
-            if (requiredRoles.has(role)) {
+            if (requiredRoles.has(role.name)) {
                 return true;
             }
         }

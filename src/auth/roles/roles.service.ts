@@ -1,27 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { RolesEntity } from './roles.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { UserService } from 'src/users/user/user.service';
+import { Repository } from 'typeorm';
+import { UserEntity } from 'src/users/entity/user.entity';
+import { roleUpdateDto } from './dto/role-update-dto';
 
 @Injectable()
 export class RolesService {
     constructor(
+        @InjectRepository(UserEntity)
+        private usersRepository: Repository<UserEntity>,
+
         @InjectRepository(RolesEntity)
         private rolesRepository: Repository<RolesEntity>,
-        private usersService: UserService,
     ) {}
 
-    // async getRoleByName(roleName: string): Promise<RolesEntity> {
-    //     return this.rolesRepository.findOne({ where: { roleName } });
-    // }
-
-    // // getUserRoles(userId: number)
-    // async getRolesByUserId(id: number): Promise<RolesEntity[]> {
-    //     await this.usersService.getUserById(id)
-
-    //     return this.rolesRepository.find({
-    //         where: { users: {id: In()}  },
-    //     });
-    // }
+    async updateRoleByIdUser(
+        roleUpdateDto: roleUpdateDto,
+    ): Promise<UserEntity> {
+        let user = await this.usersRepository.findOne({
+            where: {
+                id: roleUpdateDto.userId,
+            },
+        });
+        return this.usersRepository.save({
+            ...user,
+            roles: roleUpdateDto.roles,
+        });
+    }
 }

@@ -32,8 +32,6 @@ export class AuthController {
         };
     }
 
-    @AuthGuard()
-    @Roles(Role.USER)
     @Post('signin')
     async signin(
         @Res({ passthrough: true }) res: Response,

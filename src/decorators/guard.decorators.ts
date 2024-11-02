@@ -4,5 +4,5 @@ import { applyDecorators } from '@nestjs/common';
 import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 
 export function AuthGuard() {
-    return applyDecorators(UseGuards(RolesGuard, AccessTokenGuard));
+    return applyDecorators(UseGuards(AccessTokenGuard, RolesGuard));
 }

@@ -5,15 +5,12 @@ import { UserEntity } from 'src/users/entity/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from 'express';
-import { UserService } from 'src/users/user/user.service';
-import { RolesService } from '../roles/roles.service';
-import { RolesEntity } from '../roles/roles.entity';
 
 type JwtPayload = {
     sub: number;
     username: string;
     userDb: UserEntity;
-    roles: RolesEntity[];
+    roles: string[];
 };
 
 @Injectable()
@@ -41,7 +38,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
         return {
             ...payload,
             userDb: foundUser,
-            roles: foundUser.roles.map(({ roleName }) => roleName),
+            roles: foundUser.roles,
         };
     }
 }

@@ -1,13 +1,12 @@
 import { UserEntity } from 'src/users/entity/user.entity';
-import { Column, JoinColumn, ManyToMany, PrimaryColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, PrimaryColumn } from 'typeorm';
 
-@Unique('uniq_role_name', ['roles'])
+@Entity('roles')
 export class RolesEntity {
     @PrimaryColumn()
-    @Column()
     name: string;
 
-    @ManyToMany(() => UserEntity, (user) => user.roles, { eager: true })
+    @ManyToMany(() => UserEntity, (user) => user.roles)
     @JoinColumn()
-    users: UserEntity[];
+    users?: UserEntity[];
 }
