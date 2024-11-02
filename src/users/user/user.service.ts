@@ -21,6 +21,7 @@ export class UserService {
             where: {
                 id: id,
             },
+            relations: ['roles'],
         });
         if (user) {
             return user;

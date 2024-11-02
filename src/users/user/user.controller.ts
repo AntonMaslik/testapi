@@ -1,52 +1,48 @@
-<<<<<<< Updated upstream
-import { Body, Controller, Get, Param, Post, Delete, UseGuards } from '@nestjs/common';
-=======
-import { Body, Controller, Get, Param, Post, Patch, UseGuards, Request, Req, Put} from '@nestjs/common';
->>>>>>> Stashed changes
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    Patch,
+    Request,
+    Req,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from '../entity/user.entity';
-import { UserCreateRequestDto } from '../dto/user-create-request.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/auth/roles/roles.enum';
+import { AuthGuard } from 'src/decorators/guard.decorators';
 
-
+@AuthGuard()
 @Controller('users')
 export class UserController {
     constructor(private readonly UsersService: UserService) {}
 
-<<<<<<< Updated upstream
+    @Roles(Role.ADMIN)
     @Get()
-    async getAllUsers(): Promise<UserEntity[]>
-    {
-        return this.UsersService.getAllUsers()
+    async getAllUsers(): Promise<UserEntity[]> {
+        return this.UsersService.getAllUsers();
     }
 
-    @Get(':id')
-    async getUserById(@Param('id') id: string): Promise<UserEntity>{
-        return this.UsersService.getUserById(Number(id))
-    }
-
-    @Post()
-    @UseGuards(AuthGuard('jwt'))
-    async createUser(@Body() user: UserCreateRequestDto){
-        return this.UsersService.createUser(user);
-    }
-
-    @Delete(':id')
-    async deleteById(@Param('id') id: string): Promise<UserEntity> {
-        return this.UsersService.deleteById(Number(id));
-    }
-=======
-    @UseGuards(RefreshTokenGuard )
+    @Roles(Role.USER)
     @Get('me')
-    async getMe(@Request() request: any){
+    async getMe(@Request() request: any) {
         return this.UsersService.getUserById(request.user.id);
     }
-    
-    @UseGuards(RefreshTokenGuard )
-    @Put(':id')
-    async getById(@Param('id') id: number, @Body() userUpdateDto: UserUpdateRequestDto): Promise<UserEntity>{
-        return this.UsersService.updateUserById(id, userUpdateDto)
+
+    @Roles(Role.USER)
+    @Get(':id')
+    async getById(@Param('id') id: number): Promise<UserEntity> {
+        return this.UsersService.getUserById(id);
     }
 
->>>>>>> Stashed changes
+    @Roles(Role.USER)
+    @Patch(':id')
+    async update(
+        @Param('id') id: number,
+        @Body() updateUserDto: UserUpdateRequestDto,
+    ): Promise<UserEntity> {
+        return this.UsersService.updateUserById(id, updateUserDto);
+    }
 }
