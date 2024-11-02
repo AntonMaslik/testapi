@@ -2,10 +2,12 @@ import { Body, Controller, Post, UseGuards, Res } from '@nestjs/common';
 import { UserCreateRequestDto } from 'src/users/dto/user-create-request.dto';
 import { AuthService } from './auth.service';
 import { SignInDto } from '../dto/sign-in-dto';
-import { RefreshTokenGuard as AccessTokenGuard } from '../guards/refreshToken.guard';
+import { AuthGuard } from 'src/decorators/guard.decorators';
 import { Response } from 'express';
 import { UpdateResult } from 'typeorm';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from '../roles/roles.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -30,6 +32,8 @@ export class AuthController {
         };
     }
 
+    @AuthGuard()
+    @Roles(Role.USER)
     @Post('signin')
     async signin(
         @Res({ passthrough: true }) res: Response,
@@ -49,7 +53,8 @@ export class AuthController {
         };
     }
 
-    @UseGuards(AccessTokenGuard)
+    @AuthGuard()
+    @Roles(Role.USER)
     @Post('logout')
     logout(
         @Res({ passthrough: true }) res: Response,
@@ -60,7 +65,8 @@ export class AuthController {
         return this.authService.logout(user.id);
     }
 
-    @UseGuards(AccessTokenGuard)
+    @AuthGuard()
+    @Roles(Role.USER)
     @Post('refresh')
     async refreshTokens(
         @ExtractUser() user: any,
