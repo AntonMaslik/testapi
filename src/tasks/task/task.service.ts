@@ -13,7 +13,7 @@ export class TaskService {
     ) {}
 
     async createTask(task: TaskCreateRequestDto): Promise<TaskEntity> {
-        return this.taskRepository.create(task);
+        return this.taskRepository.save(task);
     }
 
     async getAllTasks(): Promise<TaskEntity[]> {
