@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateWorkspaceDto } from '../dto/create-workspace-dto';
 import { UpdateWorkspaceDto } from '../dto/update-workspace-dto';
 import { WorkspaceEntity } from '../entity/workspace.entity';
+import { UserEntity } from 'src/users/entity/user.entity';
 
 @Injectable()
 export class WorkspaceService {
@@ -76,6 +77,12 @@ export class WorkspaceService {
             where: {
                 workspaceId: id,
             },
+        });
+    }
+
+    async getWorkspacesByIdUser(id: number) {
+        return this.workspacesRepository.find({
+            where: { userId: id },
         });
     }
 

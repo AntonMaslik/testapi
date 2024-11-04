@@ -54,4 +54,10 @@ export class WorkSpaceController {
     deleteWorkspace(@Param() id: number) {
         return this.workspacesService.deleteWorkspaceById(id);
     }
+
+    @Roles(Role.ADMIN)
+    @Get('of/:id')
+    getWorkspacesByIdUser(@Param() id: number) {
+        return this.workspacesService.getWorkspacesByIdUser(id);
+    }
 }
