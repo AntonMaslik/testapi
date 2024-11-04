@@ -4,6 +4,7 @@ import {
     DeleteDateColumn,
     UpdateDateColumn,
 } from 'typeorm';
+import { classToPlain } from 'class-transformer';
 
 export class CommonEntity extends BaseEntity {
     @DeleteDateColumn()
@@ -14,4 +15,8 @@ export class CommonEntity extends BaseEntity {
 
     @CreateDateColumn()
     createdAt: Date;
+
+    toJSON() {
+        return classToPlain(this);
+    }
 }
