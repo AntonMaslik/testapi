@@ -9,8 +9,11 @@ export class TaskCreateRequestDto {
     description: string;
 
     @IsNumber()
-    workspace_id: number;
+    workspaceId: number;
 
     @IsBoolean()
     completed: boolean;
+
+    @IsNumber()
+    position: number;
 }
