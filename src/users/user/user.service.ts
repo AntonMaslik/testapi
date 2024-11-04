@@ -1,15 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entity/user.entity';
-import { Repository } from 'typeorm';
+import { ArrayContains, MoreThan, Repository } from 'typeorm';
 import { UserCreateRequestDto } from '../dto/user-create-request.dto';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
+import { TaskEntity } from 'src/tasks/entity/task.entity';
+import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
+import { SummaryInfo } from 'src/types/summary';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(UserEntity)
         private usersRepository: Repository<UserEntity>,
+        @InjectRepository(TaskEntity)
+        private tasksRepository: Repository<TaskEntity>,
+        @InjectRepository(WorkspaceEntity)
+        private workspacesRepository: Repository<WorkspaceEntity>,
     ) {}
 
     async getAllUsers() {
@@ -72,5 +79,70 @@ export class UserService {
             ...user,
             ...userDto,
         });
+    }
+
+    async getSummaryByUserId(id: number): Promise<SummaryInfo> {
+        const now = new Date();
+        const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+        const workspacesUser = await this.workspacesRepository.find({
+            where: {
+                userId: id,
+            },
+        });
+        const workspacesUserId = workspacesUser.map(
+            (workspace) => workspace.id,
+        );
+        const countTask = await this.tasksRepository.count({
+            where: {
+                workspaceId: ArrayContains(workspacesUserId),
+            },
+        });
+        const countTaskCompleted = await this.tasksRepository.count({
+            where: {
+                workspaceId: ArrayContains(workspacesUserId),
+                completed: true,
+            },
+        });
+        const countTaskNotCompleted = await this.tasksRepository.count({
+            where: {
+                workspaceId: ArrayContains(workspacesUserId),
+                completed: false,
+            },
+        });
+
+        const [tasksLast30Days, tasksLast7Days, tasksLast24Hours] =
+            await Promise.all([
+                this.tasksRepository.count({
+                    where: {
+                        workspaceId: ArrayContains(workspacesUserId),
+                        createdAt: MoreThan(last30Days),
+                    },
+                }),
+                this.tasksRepository.count({
+                    where: {
+                        workspaceId: ArrayContains(workspacesUserId),
+                        createdAt: MoreThan(last7Days),
+                    },
+                }),
+                this.tasksRepository.count({
+                    where: {
+                        workspaceId: ArrayContains(workspacesUserId),
+                        createdAt: MoreThan(last24Hours),
+                    },
+                }),
+            ]);
+
+        return {
+            countTaskAll: countTask,
+            countTaskCompleted: countTaskCompleted,
+            countTaskNotCompleted: countTaskNotCompleted,
+            countTaskLast24Hours: tasksLast24Hours,
+            countTaskLast7Days: tasksLast7Days,
+            countTaskLast30Days: tasksLast30Days,
+            workspaces: workspacesUser,
+        };
     }
 }

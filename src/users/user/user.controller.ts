@@ -13,6 +13,7 @@ import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/auth/roles/roles.enum';
 import { AuthGuard } from 'src/decorators/guard.decorators';
+import { SummaryInfo } from 'src/types/summary';
 
 @AuthGuard()
 @Controller('users')
@@ -50,5 +51,11 @@ export class UserController {
     @Delete(':id')
     async deleteUserById(@Param('id') id: number): Promise<UserEntity> {
         return this.UsersService.deleteById(id);
+    }
+
+    @Roles(Role.ADMIN)
+    @Get('summary/:id')
+    async getSummaryUserById(@Param('id') id: number): Promise<SummaryInfo> {
+        return this.UsersService.getSummaryByUserId(id);
     }
 }
