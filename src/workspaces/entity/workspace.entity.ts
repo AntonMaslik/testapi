@@ -15,7 +15,7 @@ export class WorkspaceEntity {
     @Column()
     name: string;
 
-    @ManyToOne(() => UserEntity, (user) => user.id)
+    @ManyToOne(() => UserEntity, (user) => user.id, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'userId' })
     userId: number;
 
