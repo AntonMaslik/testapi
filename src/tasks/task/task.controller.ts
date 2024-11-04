@@ -13,40 +13,42 @@ import { TaskCreateRequestDto } from '../dto/task-create-request.dto';
 import { TaskService } from './task.service';
 import { TaskEntity } from '../entity/task.entity';
 import { TaskUpdateRequestDto } from '../dto/task-update-request.dto';
-import { UseGuards } from '@nestjs/common';
-import { AccessTokenGuard } from 'src/auth/guards/accessToken.guard';
 import { TaskPositionUpdateDto } from '../dto/task-position-update.dto';
 import { UpdateResult } from 'typeorm';
+import { AuthGuard } from 'src/decorators/guard.decorators';
+import { Role } from 'src/auth/roles/roles.enum';
+import { Roles } from 'src/decorators/roles.decorator';
 
+@AuthGuard()
 @Controller('tasks')
 export class TaskController {
     constructor(private taskServices: TaskService) {}
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.USER)
     @Post()
-    postTask(@Body() task: TaskCreateRequestDto): Promise<TaskEntity> {
+    createTask(@Body() task: TaskCreateRequestDto): Promise<TaskEntity> {
         return this.taskServices.createTask(task);
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.USER)
     @Get('all')
     getAllTasks(): Promise<TaskEntity[]> {
         return this.taskServices.getAllTasks();
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.USER)
     @Get(':id')
     getTask(@Param('id', ParseIntPipe) id: number): Promise<TaskEntity> {
         return this.taskServices.getTaskById(id);
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.ADMIN)
     @Delete(':id')
     deleteTask(@Param('id', ParseIntPipe) id: number) {
         return this.taskServices.deleteTask(id);
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.ADMIN)
     @Put(':id')
     updateTask(
         @Param() id: number,
@@ -55,7 +57,7 @@ export class TaskController {
         return this.taskServices.updateTask(id, task);
     }
 
-    @UseGuards(AccessTokenGuard)
+    @Roles(Role.USER)
     @Put('update-position')
     updateTaskPosition(
         @Body() { id, position }: TaskPositionUpdateDto,
