@@ -50,8 +50,6 @@ export class AuthService implements OnModuleInit {
 
         await this.updateRefreshToken(newUser.id, tokens.refreshToken);
 
-        console.log(newUser);
-
         return tokens;
     }
 
