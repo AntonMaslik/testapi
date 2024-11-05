@@ -50,13 +50,17 @@ export class UserController {
 
     @Roles(Role.ADMIN)
     @Delete(':id')
-    async deleteUserById(@Param('id') id: number): Promise<UserEntity> {
+    async deleteUserById(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<UserEntity> {
         return this.UsersService.deleteUserById(id);
     }
 
     @Roles(Role.ADMIN)
     @Get('summary/:id')
-    async getSummaryUserById(@Param('id') id: number): Promise<SummaryInfo> {
+    async getSummaryUserById(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<SummaryInfo> {
         return this.UsersService.getSummaryByUserId(id);
     }
 }
