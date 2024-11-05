@@ -100,7 +100,7 @@ export class WorkspaceService {
             .where('tasks.workspace = :workspaceId', {
                 workspaceId: workspaceId,
             })
-            .where('workspaces.userId = :userId', {
+            .andWhere('workspaces.userId = :userId', {
                 userId: userId,
             })
             .getMany();
