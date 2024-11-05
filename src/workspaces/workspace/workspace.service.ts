@@ -81,9 +81,10 @@ export class WorkspaceService {
     }
 
     async getWorkspacesByIdUser(id: number) {
-        return this.workspacesRepository.find({
-            where: { userId: id },
-        });
+        return this.workspacesRepository
+            .createQueryBuilder('workspaces')
+            .where('workspaces.userId = :userId', { userId: id })
+            .getMany();
     }
 
     async getAllTasks(id: number): Promise<any> {
