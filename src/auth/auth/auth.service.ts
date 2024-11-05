@@ -39,7 +39,7 @@ export class AuthService implements OnModuleInit {
             throw new BadRequestException('User already exists');
         }
 
-        const newUser = await this.usersService.create({
+        const newUser = await this.usersService.createUser({
             email: signUpDto.email,
             name: signUpDto.name,
             password: hashedPassword,

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entity/user.entity';
-import { ArrayContains, MoreThan, Repository } from 'typeorm';
+import { In, MoreThan, Repository } from 'typeorm';
 import { UserCreateRequestDto } from '../dto/user-create-request.dto';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
 import { TaskEntity } from 'src/tasks/entity/task.entity';
@@ -48,11 +48,11 @@ export class UserService {
         return null;
     }
 
-    async create(createUserDto: UserCreateRequestDto): Promise<UserEntity> {
+    async createUser(createUserDto: UserCreateRequestDto): Promise<UserEntity> {
         return this.usersRepository.save(createUserDto);
     }
 
-    async deleteById(id: number): Promise<UserEntity> {
+    async deleteUserById(id: number): Promise<UserEntity> {
         const user = await this.usersRepository.findOne({
             where: {
                 id: id,
@@ -97,18 +97,18 @@ export class UserService {
         );
         const countTask = await this.tasksRepository.count({
             where: {
-                workspaceId: ArrayContains(workspacesUserId),
+                workspaceId: In(workspacesUserId),
             },
         });
         const countTaskCompleted = await this.tasksRepository.count({
             where: {
-                workspaceId: ArrayContains(workspacesUserId),
+                workspaceId: In(workspacesUserId),
                 completed: true,
             },
         });
         const countTaskNotCompleted = await this.tasksRepository.count({
             where: {
-                workspaceId: ArrayContains(workspacesUserId),
+                workspaceId: In(workspacesUserId),
                 completed: false,
             },
         });
@@ -117,19 +117,19 @@ export class UserService {
             await Promise.all([
                 this.tasksRepository.count({
                     where: {
-                        workspaceId: ArrayContains(workspacesUserId),
+                        workspaceId: In(workspacesUserId),
                         createdAt: MoreThan(last30Days),
                     },
                 }),
                 this.tasksRepository.count({
                     where: {
-                        workspaceId: ArrayContains(workspacesUserId),
+                        workspaceId: In(workspacesUserId),
                         createdAt: MoreThan(last7Days),
                     },
                 }),
                 this.tasksRepository.count({
                     where: {
-                        workspaceId: ArrayContains(workspacesUserId),
+                        workspaceId: In(workspacesUserId),
                         createdAt: MoreThan(last24Hours),
                     },
                 }),

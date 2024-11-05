@@ -50,7 +50,7 @@ export class UserController {
     @Roles(Role.ADMIN)
     @Delete(':id')
     async deleteUserById(@Param('id') id: number): Promise<UserEntity> {
-        return this.UsersService.deleteById(id);
+        return this.UsersService.deleteUserById(id);
     }
 
     @Roles(Role.ADMIN)
