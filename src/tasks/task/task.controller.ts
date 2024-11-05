@@ -7,17 +7,18 @@ import {
     Body,
     Param,
     ParseIntPipe,
-    NotFoundException,
 } from '@nestjs/common';
 import { TaskCreateRequestDto } from '../dto/task-create-request.dto';
 import { TaskService } from './task.service';
 import { TaskEntity } from '../entity/task.entity';
 import { TaskUpdateRequestDto } from '../dto/task-update-request.dto';
-import { TaskPositionUpdateDto } from '../dto/task-position-update.dto';
 import { UpdateResult } from 'typeorm';
 import { AuthGuard } from 'src/decorators/guard.decorators';
 import { Role } from 'src/auth/roles/roles.enum';
 import { Roles } from 'src/decorators/roles.decorator';
+import { ExtractUser } from 'src/decorators/extractUser.decorator';
+import { UserEntity } from 'src/users/entity/user.entity';
+import { TaskUpdatePositionRequestDto } from '../dto/task-update-position-request.dto';
 
 @AuthGuard()
 @Controller('tasks')
@@ -25,43 +26,110 @@ export class TaskController {
     constructor(private taskServices: TaskService) {}
 
     @Roles(Role.USER)
-    @Post()
-    createTask(@Body() task: TaskCreateRequestDto): Promise<TaskEntity> {
-        return this.taskServices.createTask(task);
-    }
-
-    @Roles(Role.USER)
     @Get('all')
-    getAllTasks(): Promise<TaskEntity[]> {
-        return this.taskServices.getAllTasks();
-    }
-
-    @Roles(Role.USER)
-    @Get(':id')
-    getTask(@Param('id', ParseIntPipe) id: number): Promise<TaskEntity> {
-        return this.taskServices.getTaskById(id);
+    getTaskAllForUser(@ExtractUser() user: UserEntity) {
+        return this.taskServices.getAllTaskForUser(user.id);
     }
 
     @Roles(Role.ADMIN)
-    @Delete(':id')
-    deleteTask(@Param('id', ParseIntPipe) id: number) {
-        return this.taskServices.deleteTask(id);
-    }
-
-    @Roles(Role.ADMIN)
-    @Put(':id')
-    updateTask(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() task: TaskUpdateRequestDto,
-    ): Promise<UpdateResult> {
-        return this.taskServices.updateTask(id, task);
+    @Get('admin/all')
+    getTaskAllForAdmin(id: number): Promise<TaskEntity[]> {
+        return this.taskServices.getAllTaskForAdmin();
     }
 
     @Roles(Role.USER)
     @Put('update-position')
-    updateTaskPosition(
-        @Body() { id, position }: TaskPositionUpdateDto,
-    ): Promise<UpdateResult | NotFoundException> {
-        return this.taskServices.updatePosition(id, position);
+    updatePositionTaskByIdForUser(
+        @ExtractUser() user: UserEntity,
+        @Body() taskUpdatePositionRequestDto: TaskUpdatePositionRequestDto,
+    ) {
+        return this.taskServices.updatePositionTaskByIdForUser(
+            user.id,
+            taskUpdatePositionRequestDto,
+        );
+    }
+
+    @Roles(Role.ADMIN)
+    @Put('update-position')
+    updatePositionTaskByIdForAdmin(
+        @Body() taskUpdatePositionRequestDto: TaskUpdatePositionRequestDto,
+    ) {
+        return this.taskServices.updatePositionTaskByIdForAdmin(
+            taskUpdatePositionRequestDto,
+        );
+    }
+
+    @Roles(Role.ADMIN)
+    @Post('admin')
+    createTaskForAdmin(
+        @Body() taskCreateRequestDto: TaskCreateRequestDto,
+    ): Promise<TaskEntity> {
+        return this.taskServices.createTaskForAdmin(taskCreateRequestDto);
+    }
+
+    @Roles(Role.ADMIN)
+    @Put('admin')
+    updateTaskForAdmin(
+        @Body() taskUpdateRequestDto: TaskUpdateRequestDto,
+    ): Promise<UpdateResult> {
+        return this.taskServices.updateTaskForAdmin(taskUpdateRequestDto);
+    }
+
+    @Roles(Role.ADMIN)
+    @Delete('admin/:id')
+    deleteTaskForAdmin(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<TaskEntity> {
+        return this.taskServices.deleteTaskForAdmin(id);
+    }
+
+    @Roles(Role.ADMIN)
+    @Get('admin/:id')
+    getTaskByIdForAdmin(
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<TaskEntity> {
+        return this.taskServices.getTaskByIdForAdmin(id);
+    }
+
+    @Roles(Role.USER)
+    @Post()
+    createTaskForUser(
+        @ExtractUser() user: UserEntity,
+        @Body() taskCreateRequestDto: TaskCreateRequestDto,
+    ) {
+        return this.taskServices.createTaskForUser(
+            user.id,
+            taskCreateRequestDto,
+        );
+    }
+
+    @Roles(Role.USER)
+    @Put()
+    updateTaskForUser(
+        @ExtractUser() user: UserEntity,
+        @Body() taskUpdateRequestDto: TaskUpdateRequestDto,
+    ): Promise<UpdateResult> {
+        return this.taskServices.updateTaskForUser(
+            user.id,
+            taskUpdateRequestDto,
+        );
+    }
+
+    @Roles(Role.USER)
+    @Delete(':id')
+    deleteTaskForUser(
+        @Param('id', ParseIntPipe) id: number,
+        @ExtractUser() user: UserEntity,
+    ): Promise<TaskEntity> {
+        return this.taskServices.deleteTaskForUser(user.id, id);
+    }
+
+    @Roles(Role.USER)
+    @Get(':id')
+    getTaskByIdForUser(
+        @Param('id', ParseIntPipe) id: number,
+        @ExtractUser() user: UserEntity,
+    ) {
+        return this.taskServices.getTaskByIdForUser(id, user.id);
     }
 }

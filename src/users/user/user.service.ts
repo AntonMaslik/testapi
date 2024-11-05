@@ -92,8 +92,6 @@ export class UserService {
             .where('workspaces.userId = :userId', { userId: id })
             .getMany();
 
-        console.log(workspacesUser);
-
         const workspacesUserId = workspacesUser.map(
             (workspace) => workspace.id,
         );
