@@ -16,13 +16,50 @@ export class WorkspaceService {
         private tasksRepository: Repository<TaskEntity>,
     ) {}
 
-    async createWorkspaceForAdmin() {}
+    async createWorkspaceForAdmin(
+        createWorkspaceDto: CreateWorkspaceDto,
+    ): Promise<WorkspaceEntity> {
+        return await this.workspacesRepository.save(createWorkspaceDto);
+    }
 
-    async updateWorkspaceForAdmin() {}
+    async updateWorkspaceForAdmin(
+        updateWorkspaceDto: UpdateWorkspaceDto,
+    ): Promise<UpdateResult> {
+        return await this.workspacesRepository.update(
+            updateWorkspaceDto.id,
+            updateWorkspaceDto,
+        );
+    }
 
-    async deleteWorkspaceForAdmin() {}
+    async deleteWorkspaceForAdmin(
+        workspaceId: number,
+    ): Promise<WorkspaceEntity> {
+        const workspace = await this.workspacesRepository.findOne({
+            where: {
+                id: workspaceId,
+            },
+        });
 
-    async getWorkspaceByIdForAdmin() {}
+        return this.workspacesRepository.softRemove(workspace);
+    }
+
+    async getWorkspaceByIdForAdmin(
+        workspaceId: number,
+    ): Promise<WorkspaceEntity> {
+        return this.workspacesRepository.findOne({
+            where: { id: workspaceId },
+        });
+    }
+
+    async getWorkspacesByIdUserForAdmin(
+        userId: number,
+    ): Promise<WorkspaceEntity[]> {
+        return this.workspacesRepository.find({
+            where: {
+                userId: userId,
+            },
+        });
+    }
 
     async createWorkspaceForUser(
         userId: number,
@@ -71,17 +108,14 @@ export class WorkspaceService {
         return this.workspacesRepository.softRemove(workspace);
     }
 
-    async getTasksByWorkspaceIdForUser(userId: number, workspaceId: number) {
-        const workspace = await this.workspacesRepository.findOne({
+    async getWorkspaceByIdForUser(
+        userId: number,
+        workspaceId: number,
+    ): Promise<WorkspaceEntity> {
+        return await this.workspacesRepository.findOne({
             where: {
                 userId: userId,
                 id: workspaceId,
-            },
-        });
-
-        return this.tasksRepository.find({
-            where: {
-                workspaceId: workspace.id,
             },
         });
     }
@@ -89,20 +123,33 @@ export class WorkspaceService {
     async getTasksBasicInfoByWorkspaceIdForUser(
         userId: number,
         workspaceId: number,
-    ) {
-        const basicInfo = this.tasksRepository
+    ): Promise<BasicInfo> {
+        const basicInfo = await this.tasksRepository
             .createQueryBuilder('tasks')
-            .select([
-                'SELECT COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
-                'SELECT COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
-                'SELECT COUNT(tasks.id)',
-            ])
-            .where('tasks.workspace = :workspaceId', {
+            .leftJoin('tasks.workspace', 'workspaces')
+            .select(
+                'COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
+                'completedTasks',
+            )
+            .addSelect(
+                'COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
+                'notCompletedTasks',
+            )
+            .addSelect('COUNT(tasks.id)', 'countTasks')
+            .where('tasks.workspaceId = :workspaceId', {
                 workspaceId: workspaceId,
             })
-            .where('workspaces.userId = :userId', {
+            .andWhere('workspaces.userId = :userId', {
                 userId: userId,
             })
-            .getMany();
+            .getRawOne();
+
+        console.log(basicInfo);
+
+        return {
+            countTaskAll: basicInfo.countTasks,
+            countTaskNotCompleted: basicInfo.notCompletedTasks,
+            countTaskCompleted: basicInfo.completedTasks,
+        };
     }
 }
