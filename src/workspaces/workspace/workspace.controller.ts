@@ -6,7 +6,6 @@ import {
     Post,
     Put,
     Delete,
-    ParseIntPipe,
 } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -22,13 +21,13 @@ export class WorkSpaceController {
 
     @Roles(Role.USER)
     @Get(':id')
-    getAllTasks(@Param('id', ParseIntPipe) id: number) {
+    getAllTasks(@Param('id') id: number) {
         return this.workspacesService.getAllTasks(id);
     }
 
     @Roles(Role.USER)
     @Get('tasks/:id')
-    getTask(@Param('id', ParseIntPipe) id: number) {
+    getTask(@Param('id') id: number) {
         return this.workspacesService.getTasksByWorkspaceId(id);
     }
 
@@ -41,7 +40,7 @@ export class WorkSpaceController {
     @Roles(Role.USER)
     @Put(':id')
     updateWorkspace(
-        @Param('id', ParseIntPipe) id: number,
+        @Param() id: number,
         @Body() updateWorkspaceDto: UpdateWorkspaceDto,
     ) {
         return this.workspacesService.updateWorkspaceById(
@@ -52,13 +51,13 @@ export class WorkSpaceController {
 
     @Roles(Role.USER)
     @Delete(':id')
-    deleteWorkspace(@Param('id', ParseIntPipe) id: number) {
+    deleteWorkspace(@Param() id: number) {
         return this.workspacesService.deleteWorkspaceById(id);
     }
 
     @Roles(Role.ADMIN)
     @Get('of/:id')
-    getWorkspacesByIdUser(@Param('id', ParseIntPipe) id: number) {
+    getWorkspacesByIdUser(@Param() id: number) {
         return this.workspacesService.getWorkspacesByIdUser(id);
     }
 }
