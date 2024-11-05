@@ -51,7 +51,7 @@ export class TaskController {
     @Roles(Role.ADMIN)
     @Put(':id')
     updateTask(
-        @Param() id: number,
+        @Param('id', ParseIntPipe) id: number,
         @Body() task: TaskUpdateRequestDto,
     ): Promise<UpdateResult> {
         return this.taskServices.updateTask(id, task);
