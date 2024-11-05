@@ -1,11 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskEntity } from 'src/tasks/entity/task.entity';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { CreateWorkspaceDto } from '../dto/create-workspace-dto';
 import { UpdateWorkspaceDto } from '../dto/update-workspace-dto';
 import { WorkspaceEntity } from '../entity/workspace.entity';
-import { UserEntity } from 'src/users/entity/user.entity';
+import { BasicInfo } from 'src/types/basicInfo';
 
 @Injectable()
 export class WorkspaceService {
@@ -16,86 +16,93 @@ export class WorkspaceService {
         private tasksRepository: Repository<TaskEntity>,
     ) {}
 
-    async createWorkspace(
+    async createWorkspaceForAdmin() {}
+
+    async updateWorkspaceForAdmin() {}
+
+    async deleteWorkspaceForAdmin() {}
+
+    async getWorkspaceByIdForAdmin() {}
+
+    async createWorkspaceForUser(
+        userId: number,
         createWorkspaceDto: CreateWorkspaceDto,
     ): Promise<WorkspaceEntity> {
-        return this.workspacesRepository.save(createWorkspaceDto);
+        createWorkspaceDto.userId = userId;
+
+        if (createWorkspaceDto.userId != userId) {
+            throw new ForbiddenException(
+                'You may only  create workspace for you',
+            );
+        }
+
+        return await this.workspacesRepository.save(createWorkspaceDto);
     }
 
-    async updateWorkspaceById(
-        id: number,
+    async updateWorkspaceByIdForUser(
+        userId: number,
         updateWorkspaceDto: UpdateWorkspaceDto,
+    ): Promise<UpdateResult> {
+        updateWorkspaceDto.userId = userId;
+
+        if (updateWorkspaceDto.userId != userId) {
+            throw new ForbiddenException(
+                'You may only  create workspace for you',
+            );
+        }
+
+        return await this.workspacesRepository.update(
+            updateWorkspaceDto.id,
+            updateWorkspaceDto,
+        );
+    }
+
+    async deleteWorkspaceByIdForUser(
+        userId: number,
+        workspaceId: number,
     ): Promise<WorkspaceEntity> {
         const workspace = await this.workspacesRepository.findOne({
             where: {
-                id: id,
+                userId: userId,
+                id: workspaceId,
             },
         });
-
-        if (!workspace) {
-            throw new NotFoundException('Workspace not found!');
-        }
-
-        return this.workspacesRepository.save({
-            ...workspace,
-            ...updateWorkspaceDto,
-        });
-    }
-
-    async getWorkspaceById(id: number): Promise<WorkspaceEntity> {
-        return this.workspacesRepository.findOne({
-            where: {
-                id,
-            },
-        });
-    }
-
-    async deleteWorkspaceById(id: number): Promise<WorkspaceEntity> {
-        const tasks = await this.tasksRepository.find({
-            where: {
-                workspaceId: id,
-            },
-        });
-
-        const workspace = await this.workspacesRepository.findOne({
-            where: {
-                id: id,
-            },
-        });
-
-        if (!tasks || !workspace) {
-            throw new NotFoundException('Workspace or Tasks not found!');
-        }
-
-        await this.tasksRepository.softRemove(tasks);
 
         return this.workspacesRepository.softRemove(workspace);
     }
 
-    async getTasksByWorkspaceId(id: number) {
+    async getTasksByWorkspaceIdForUser(userId: number, workspaceId: number) {
+        const workspace = await this.workspacesRepository.findOne({
+            where: {
+                userId: userId,
+                id: workspaceId,
+            },
+        });
+
         return this.tasksRepository.find({
             where: {
-                workspaceId: id,
+                workspaceId: workspace.id,
             },
         });
     }
 
-    async getWorkspacesByIdUser(id: number) {
-        return this.workspacesRepository
-            .createQueryBuilder('workspaces')
-            .where('workspaces.userId = :userId', { userId: id })
-            .getMany();
-    }
-
-    async getAllTasks(id: number): Promise<any> {
-        return this.tasksRepository
+    async getTasksBasicInfoByWorkspaceIdForUser(
+        userId: number,
+        workspaceId: number,
+    ) {
+        const basicInfo = this.tasksRepository
             .createQueryBuilder('tasks')
             .select([
-                'COUNT(CASE WHEN tasks.completed = true THEN 1 END) AS completedCount',
-                'COUNT(CASE WHEN tasks.completed = false THEN 1 END) AS notCompletedCount',
-                'COUNT(tasks.id) AS countTasks',
+                'SELECT COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
+                'SELECT COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
+                'SELECT COUNT(tasks.id)',
             ])
-            .where('tasks.workspaceId = :id', { id: id })
-            .getRawOne();
+            .where('tasks.workspace = :workspaceId', {
+                workspaceId: workspaceId,
+            })
+            .where('workspaces.userId = :userId', {
+                userId: userId,
+            })
+            .getMany();
     }
 }

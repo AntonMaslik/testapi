@@ -56,7 +56,6 @@ export class TaskService {
         userId: number,
         taskCreateRequestDto: TaskCreateRequestDto,
     ): Promise<TaskEntity> {
-        console.log(userId);
         if (
             await this.checkWorkspaceOwnedUser(
                 userId,
