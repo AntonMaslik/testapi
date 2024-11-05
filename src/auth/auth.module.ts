@@ -12,10 +12,17 @@ import { ConfigService } from '@nestjs/config';
 import { RolesEntity } from './roles/roles.entity';
 import { RolesService } from './roles/roles.service';
 import { RolesController } from './roles/roles.controller';
+import { TaskEntity } from 'src/tasks/entity/task.entity';
+import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserEntity, RolesEntity]),
+        TypeOrmModule.forFeature([
+            UserEntity,
+            RolesEntity,
+            WorkspaceEntity,
+            TaskEntity,
+        ]),
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.register({}),
     ],

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entity/user.entity';
-import { In, MoreThan, Repository } from 'typeorm';
+import { createQueryBuilder, In, MoreThan, Repository } from 'typeorm';
 import { UserCreateRequestDto } from '../dto/user-create-request.dto';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
 import { TaskEntity } from 'src/tasks/entity/task.entity';
@@ -87,11 +87,13 @@ export class UserService {
         const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
-        const workspacesUser = await this.workspacesRepository.find({
-            where: {
-                userId: id,
-            },
-        });
+        const workspacesUser = await this.workspacesRepository
+            .createQueryBuilder('workspaces')
+            .where('workspaces.userId = :userId', { userId: id })
+            .getMany();
+
+        console.log(workspacesUser);
+
         const workspacesUserId = workspacesUser.map(
             (workspace) => workspace.id,
         );
