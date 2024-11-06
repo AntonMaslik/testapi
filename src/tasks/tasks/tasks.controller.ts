@@ -53,7 +53,7 @@ export class TaskController {
         return this.tasksServices.updateTask(user, taskUpdateRequestDto, id);
     }
 
-    @Put(':id')
+    @Put()
     updatePosTask(
         @ExtractUser() user: UserEntity,
         @Body() taskUpdatePositionRequestDto: TaskUpdatePositionRequestDto,
