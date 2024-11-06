@@ -42,7 +42,7 @@ export class UserService {
                 email: email,
             },
         });
-        console.log(typeof email);
+
         if (user) {
             return user;
         }

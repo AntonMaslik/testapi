@@ -5,8 +5,6 @@ ConfigModule.forRoot({ envFilePath: `.env`, isGlobal: true });
 
 const configService = new ConfigService();
 
-console.log(process.env);
-
 export default new DataSource({
     type: 'postgres',
     host: configService.getOrThrow<string>('POSTGRES_HOST'),
