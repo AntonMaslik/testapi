@@ -13,7 +13,7 @@ import { SignUpDto } from '../dto/sign-up-dto';
 import { UserService } from 'src/users/users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { SignInDto } from '../dto/sign-in-dto';
-import { Role } from '../roles/roles.enum';
+import { Role } from '../roles/roles/roles.enum';
 
 @Injectable()
 export class AuthService implements OnModuleInit {

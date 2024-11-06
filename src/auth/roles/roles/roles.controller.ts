@@ -3,7 +3,7 @@ import { roleUpdateDto } from './dto/role-update-dto';
 import { RolesService } from './roles.service';
 import { AuthGuard } from 'src/decorators/guard.decorators';
 import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from './roles.enum';
+import { Role } from './roles/roles.enum';
 
 @AuthGuard()
 @Controller('auth')

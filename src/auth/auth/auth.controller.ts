@@ -7,7 +7,7 @@ import { Response } from 'express';
 import { UpdateResult } from 'typeorm';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from '../roles/roles.enum';
+import { Role } from '../roles/roles/roles.enum';
 
 @Controller('auth')
 export class AuthController {

@@ -1,5 +1,5 @@
 import { IsArray, IsNotEmpty, IsNumber } from 'class-validator';
-import { RolesEntity } from '../roles.entity';
+import { RolesEntity } from '../entity/roles.entity';
 
 export class roleUpdateDto {
     @IsNotEmpty()

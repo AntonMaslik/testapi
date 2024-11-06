@@ -38,7 +38,6 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
         return {
             ...payload,
             userDb: foundUser,
-            roles: foundUser.roles,
         };
     }
 }
