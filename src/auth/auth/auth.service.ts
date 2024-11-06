@@ -54,6 +54,10 @@ export class AuthService implements OnModuleInit {
     }
 
     async signIn(data: SignInDto) {
+        if (!data.email) {
+            throw new BadRequestException('Please enter e-mail');
+        }
+
         const user = await this.usersService.getUserByEmail(data.email);
 
         if (!user) {
