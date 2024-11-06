@@ -20,50 +20,17 @@ import { SummaryInfo } from 'src/types/summary';
 @Controller('users')
 export class UserController {
     constructor(private readonly UsersService: UserService) {}
-<<<<<<< Updated upstream:src/users/user/user.controller.ts
 
-    @Roles(Role.ADMIN)
-    @Get('admin/all')
-    async getAllUsers(): Promise<UserEntity[]> {
-        return this.UsersService.getAllUsers();
-    }
-
-    @Roles(Role.USER)
     @Get('me')
-    async getMe(@Request() request: any) {
-        return this.UsersService.getUserById(request.user.id);
-    }
+    getMe() {}
 
-    @Roles(Role.ADMIN)
-    @Get('admin/:id')
-    async getById(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
-        return this.UsersService.getUserById(id);
-    }
+    @Get(':id')
+    getUserById() {}
 
-    @Roles(Role.ADMIN)
-    @Patch('admin/:id')
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateUserDto: UserUpdateRequestDto,
-    ): Promise<UserEntity> {
-        return this.UsersService.updateUserById(id, updateUserDto);
-    }
+    getUserByIdSummary() {}
 
-    @Roles(Role.ADMIN)
-    @Delete('admin/:id')
-    async deleteUserById(
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<UserEntity> {
-        return this.UsersService.deleteUserById(id);
-    }
+    deleteUserById() {}
 
-    @Roles(Role.ADMIN)
-    @Get('admin/summary/:id')
-    async getSummaryUserById(
-        @Param('id', ParseIntPipe) id: number,
-    ): Promise<SummaryInfo> {
-        return this.UsersService.getSummaryByUserId(id);
-    }
-=======
->>>>>>> Stashed changes:src/users/users/users.controller.ts
+    @Put(':id')
+    updateUserById() {}
 }
