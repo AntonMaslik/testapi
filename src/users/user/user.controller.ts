@@ -22,7 +22,7 @@ export class UserController {
     constructor(private readonly UsersService: UserService) {}
 
     @Roles(Role.ADMIN)
-    @Get()
+    @Get('admin/all')
     async getAllUsers(): Promise<UserEntity[]> {
         return this.UsersService.getAllUsers();
     }
@@ -34,13 +34,13 @@ export class UserController {
     }
 
     @Roles(Role.ADMIN)
-    @Get(':id')
+    @Get('admin/:id')
     async getById(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
         return this.UsersService.getUserById(id);
     }
 
-    @Roles(Role.USER)
-    @Patch(':id')
+    @Roles(Role.ADMIN)
+    @Patch('admin/:id')
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateUserDto: UserUpdateRequestDto,
@@ -49,7 +49,7 @@ export class UserController {
     }
 
     @Roles(Role.ADMIN)
-    @Delete(':id')
+    @Delete('admin/:id')
     async deleteUserById(
         @Param('id', ParseIntPipe) id: number,
     ): Promise<UserEntity> {
@@ -57,7 +57,7 @@ export class UserController {
     }
 
     @Roles(Role.ADMIN)
-    @Get('summary/:id')
+    @Get('admin/summary/:id')
     async getSummaryUserById(
         @Param('id', ParseIntPipe) id: number,
     ): Promise<SummaryInfo> {
