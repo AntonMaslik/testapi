@@ -61,6 +61,33 @@ export class WorkspaceService {
         });
     }
 
+    async getTasksBasicInfoByWorkspaceIdForAdmin(
+        workspaceId: number,
+    ): Promise<BasicInfo> {
+        const basicInfo = await this.tasksRepository
+            .createQueryBuilder('tasks')
+            .leftJoin('tasks.workspace', 'workspaces')
+            .select(
+                'COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
+                'completedTasks',
+            )
+            .addSelect(
+                'COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
+                'notCompletedTasks',
+            )
+            .addSelect('COUNT(tasks.id)', 'countTasks')
+            .where('tasks.workspaceId = :workspaceId', {
+                workspaceId: workspaceId,
+            })
+            .getRawOne();
+
+        return {
+            countTaskAll: basicInfo.countTasks,
+            countTaskNotCompleted: basicInfo.notCompletedTasks,
+            countTaskCompleted: basicInfo.completedTasks,
+        };
+    }
+
     async createWorkspaceForUser(
         userId: number,
         createWorkspaceDto: CreateWorkspaceDto,
@@ -143,8 +170,6 @@ export class WorkspaceService {
                 userId: userId,
             })
             .getRawOne();
-
-        console.log(basicInfo);
 
         return {
             countTaskAll: basicInfo.countTasks,

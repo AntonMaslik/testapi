@@ -25,6 +25,72 @@ import { BasicInfo } from 'src/types/basicInfo';
 export class WorkSpaceController {
     constructor(private readonly workspacesService: WorkspaceService) {}
 
+    @Roles(Role.ADMIN)
+    @Post('admin')
+    createWorkspaceForAdmin(
+        createWorkspaceDto: CreateWorkspaceDto,
+    ): Promise<WorkspaceEntity> {
+        return this.workspacesService.createWorkspaceForAdmin(
+            createWorkspaceDto,
+        );
+    }
+
+    @Roles(Role.ADMIN)
+    @Put('admin')
+    updateWorkspaceForAdmin(
+        updateWorkspaceDto: UpdateWorkspaceDto,
+    ): Promise<UpdateResult> {
+        return this.workspacesService.updateWorkspaceForAdmin(
+            updateWorkspaceDto,
+        );
+    }
+
+    @Roles(Role.ADMIN)
+    @Delete('admin/:id')
+    deleteWorkspaceForAdmin(
+        @Param('id', ParseIntPipe) workspaceId: number,
+    ): Promise<WorkspaceEntity> {
+        return this.workspacesService.deleteWorkspaceForAdmin(workspaceId);
+    }
+
+    @Roles(Role.ADMIN)
+    @Get('admin/:id')
+    getWorkspaceByIdForAdmin(
+        @Param('id', ParseIntPipe) workspaceId: number,
+    ): Promise<WorkspaceEntity> {
+        return this.workspacesService.getWorkspaceByIdForAdmin(workspaceId);
+    }
+
+    @Roles(Role.ADMIN)
+    @Get('admin/of/:id')
+    getWorkspaceByIdUserForAdmin(
+        @Param('id', ParseIntPipe) userId: number,
+    ): Promise<WorkspaceEntity[]> {
+        return this.workspacesService.getWorkspacesByIdUserForAdmin(userId);
+    }
+
+    @Roles(Role.ADMIN)
+    @Get('admin/basic-info/:id')
+    getTasksBasicInfoByWorkspaceIdForAdmin(
+        @Param('id', ParseIntPipe) workspaceId: number,
+    ): Promise<BasicInfo> {
+        return this.workspacesService.getTasksBasicInfoByWorkspaceIdForAdmin(
+            workspaceId,
+        );
+    }
+
+    @Roles(Role.USER)
+    @Get('basic-info/:id')
+    getTasksBasicInfoByWorkspaceIdForUser(
+        @ExtractUser() user,
+        @Param('id', ParseIntPipe) workspaceId: number,
+    ): Promise<BasicInfo> {
+        return this.workspacesService.getTasksBasicInfoByWorkspaceIdForUser(
+            user.id,
+            workspaceId,
+        );
+    }
+
     @Roles(Role.USER)
     @Post()
     createWorkspaceForUser(
@@ -68,18 +134,6 @@ export class WorkSpaceController {
         @Param('id', ParseIntPipe) workspaceId: number,
     ): Promise<WorkspaceEntity> {
         return this.workspacesService.getWorkspaceByIdForUser(
-            user.id,
-            workspaceId,
-        );
-    }
-
-    @Roles(Role.USER)
-    @Get('basic-info/:id')
-    getTasksBasicInfoByWorkspaceIdForUser(
-        @ExtractUser() user,
-        @Param('id', ParseIntPipe) workspaceId: number,
-    ): Promise<BasicInfo> {
-        return this.workspacesService.getTasksBasicInfoByWorkspaceIdForUser(
             user.id,
             workspaceId,
         );
