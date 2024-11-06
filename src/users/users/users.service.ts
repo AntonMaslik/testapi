@@ -4,7 +4,7 @@ import { UserEntity } from '../entity/user.entity';
 import { createQueryBuilder, In, MoreThan, Repository } from 'typeorm';
 import { UserCreateRequestDto } from '../dto/user-create-request.dto';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
-import { TaskEntity } from 'src/tasks/entity/task.entity';
+import { TaskEntity } from 'src/tasks/entity/tasks.entity';
 import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
 import { SummaryInfo } from 'src/types/summary';
 

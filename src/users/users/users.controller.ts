@@ -8,7 +8,7 @@ import {
     Patch,
     Request,
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UserService } from './users.service';
 import { UserEntity } from '../entity/user.entity';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
 import { Roles } from 'src/decorators/roles.decorator';

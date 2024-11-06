@@ -8,7 +8,7 @@ import {
     Delete,
     ParseIntPipe,
 } from '@nestjs/common';
-import { WorkspaceService } from './workspace.service';
+import { WorkspaceService } from './workspaces.service';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/auth/roles/roles.enum';
 import { CreateWorkspaceDto } from '../dto/create-workspace-dto';

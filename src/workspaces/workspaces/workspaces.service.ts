@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TaskEntity } from 'src/tasks/entity/task.entity';
+import { TaskEntity } from 'src/tasks/entity/tasks.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { CreateWorkspaceDto } from '../dto/create-workspace-dto';
 import { UpdateWorkspaceDto } from '../dto/update-workspace-dto';

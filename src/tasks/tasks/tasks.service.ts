@@ -4,7 +4,7 @@ import {
     BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TaskEntity } from '../entity/task.entity';
+import { TaskEntity } from '../entity/tasks.entity';
 import { In, Repository, UpdateResult } from 'typeorm';
 import { TaskCreateRequestDto } from '../dto/task-create-request.dto';
 import { TaskUpdateRequestDto } from '../dto/task-update-request.dto';

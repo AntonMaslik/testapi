@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { UserService } from './user/user.service';
-import { UserController } from './user/user.controller';
+import { UserService } from './users/users.service';
+import { UserController } from './users/users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entity//user.entity';
 import { RolesEntity } from 'src/auth/roles/roles.entity';
-import { TaskEntity } from 'src/tasks/entity/task.entity';
+import { TaskEntity } from 'src/tasks/entity/tasks.entity';
 import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
 
 @Module({

@@ -7,12 +7,12 @@ import { PassportModule } from '@nestjs/passport';
 import { UserEntity } from 'src/users/entity/user.entity';
 import { RefreshTokenStrategy } from './auth/refreshToken.strategy';
 import { AccessTokenStrategy } from './auth/jwt.strategy';
-import { UserService } from 'src/users/user/user.service';
+import { UserService } from 'src/users/users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { RolesEntity } from './roles/roles.entity';
 import { RolesService } from './roles/roles.service';
 import { RolesController } from './roles/roles.controller';
-import { TaskEntity } from 'src/tasks/entity/task.entity';
+import { TaskEntity } from 'src/tasks/entity/tasks.entity';
 import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
 
 @Module({
