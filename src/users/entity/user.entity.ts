@@ -5,7 +5,7 @@ import {
     ManyToMany,
     JoinTable,
 } from 'typeorm';
-import { RolesEntity } from 'src/auth/roles/roles.entity';
+import { RolesEntity } from 'src/auth/roles/entity/roles.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity('users')

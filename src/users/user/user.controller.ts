@@ -12,7 +12,7 @@ import { UserService } from './user.service';
 import { UserEntity } from '../entity/user.entity';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
 import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from 'src/auth/roles/roles.enum';
+import { Role } from 'src/auth/roles/roles/roles.enum';
 import { AuthGuard } from 'src/decorators/guard.decorators';
 import { SummaryInfo } from 'src/types/summary';
 
@@ -20,6 +20,7 @@ import { SummaryInfo } from 'src/types/summary';
 @Controller('users')
 export class UserController {
     constructor(private readonly UsersService: UserService) {}
+<<<<<<< Updated upstream:src/users/user/user.controller.ts
 
     @Roles(Role.ADMIN)
     @Get('admin/all')
@@ -63,4 +64,6 @@ export class UserController {
     ): Promise<SummaryInfo> {
         return this.UsersService.getSummaryByUserId(id);
     }
+=======
+>>>>>>> Stashed changes:src/users/users/users.controller.ts
 }

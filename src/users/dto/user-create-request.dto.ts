@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsEmail, MinLength } from 'class-validator';
-import { RolesEntity } from 'src/auth/roles/roles.entity';
+import { RolesEntity } from 'src/auth/roles/entity/roles.entity';
 
 export class UserCreateRequestDto {
     @IsNotEmpty()
