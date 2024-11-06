@@ -12,8 +12,11 @@ export class TaskUpdateRequestDto {
     public description: string;
 
     @IsNumber()
-    public workspace_id: number;
+    public workspaceId: number;
 
     @IsBoolean()
     public completed: boolean;
+
+    @IsNumber()
+    public position: number;
 }

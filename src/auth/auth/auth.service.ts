@@ -10,7 +10,7 @@ import { UserEntity } from '../../users/entity/user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from '../dto/sign-up-dto';
-import { UserService } from 'src/users/user/user.service';
+import { UserService } from 'src/users/users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { SignInDto } from '../dto/sign-in-dto';
 import { Role } from '../roles/roles.enum';
@@ -54,6 +54,10 @@ export class AuthService implements OnModuleInit {
     }
 
     async signIn(data: SignInDto) {
+        if (!data.email) {
+            throw new BadRequestException('Please enter e-mail');
+        }
+
         const user = await this.usersService.getUserByEmail(data.email);
 
         if (!user) {

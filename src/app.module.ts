@@ -2,15 +2,15 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './users/user.module';
-import { TaskModule } from './tasks/task.module';
-import { WorkspaceModule } from './workspaces/workspace.module';
+import { UserModule } from './users/users.module';
+import { TaskModule } from './tasks/tasks.module';
+import { WorkspaceModule } from './workspaces/workspaces.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
     imports: [
-        ConfigModule.forRoot({ envFilePath: `.env` }),
+        ConfigModule.forRoot({ envFilePath: `.env`, isGlobal: true }),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: (configService: ConfigService) => ({
@@ -21,8 +21,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                 password: configService.getOrThrow<string>('POSTGRES_PASSWORD'),
                 database: configService.getOrThrow<string>('POSTGRES_DATABASE'),
                 entities: ['entity/*.entity{.ts,.js}'],
+                synchronize: false,
                 autoLoadEntities: true,
-                synchronize: true,
             }),
             inject: [ConfigService],
         }),
