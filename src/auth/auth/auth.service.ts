@@ -30,6 +30,10 @@ export class AuthService implements OnModuleInit {
     }
 
     async signUp(signUpDto: SignUpDto): Promise<{ accessToken; refreshToken }> {
+        if (!signUpDto.password || !signUpDto.email || !signUpDto.name) {
+            throw new BadRequestException('Not found arguments in request');
+        }
+
         const hashedPassword = await bcrypt.hash(signUpDto.password, 10);
         const userExists = await this.usersRepository.findOne({
             where: {
@@ -109,9 +113,10 @@ export class AuthService implements OnModuleInit {
             throw new ForbiddenException('Access Denied');
         }
 
+        const hash = await bcrypt.hash(refreshToken, 10);
         const refreshTokenMatches = await bcrypt.compare(
-            refreshToken,
             user.refreshToken,
+            hash,
         );
 
         if (!refreshTokenMatches) {

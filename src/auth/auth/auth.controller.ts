@@ -6,6 +6,7 @@ import { AuthGuard } from 'src/decorators/guard.decorators';
 import { Response } from 'express';
 import { UpdateResult } from 'typeorm';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
+import { UserEntity } from 'src/users/entity/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -63,7 +64,7 @@ export class AuthController {
     @AuthGuard()
     @Post('refresh')
     async refreshTokens(
-        @ExtractUser() user: any,
+        @ExtractUser() user: UserEntity,
         @Res({ passthrough: true }) res: Response,
     ): Promise<{ accessToken }> {
         const tokens = await this.authService.refreshTokens(
