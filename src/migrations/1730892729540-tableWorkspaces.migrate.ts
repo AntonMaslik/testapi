@@ -6,6 +6,9 @@ export class tableWorkspacesMigrate1730892729540 implements MigrationInterface {
             `
                 CREATE TABLE IF NOT EXISTS workspaces
                 (
+                    "deletedAt" timestamp without time zone,  
+                    "updatedAt" timestamp without time zone NOT NULL DEFAULT now(),  
+                    "createdAt" timestamp without time zone NOT NULL DEFAULT now(),  
                     id serial PRIMARY KEY,  
                     name VARCHAR NOT NULL,  
                     description VARCHAR NOT NULL, 

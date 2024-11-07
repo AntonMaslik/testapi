@@ -6,6 +6,9 @@ export class tableUserMigrate1730892729500 implements MigrationInterface {
             `
             CREATE TABLE IF NOT EXISTS users
             (
+                "deletedAt" timestamp without time zone,  
+                "updatedAt" timestamp without time zone NOT NULL DEFAULT now(),  
+                "createdAt" timestamp without time zone NOT NULL DEFAULT now(),  
                 id serial PRIMARY KEY,  
                 name VARCHAR NOT NULL,   
                 email VARCHAR NOT NULL,  
