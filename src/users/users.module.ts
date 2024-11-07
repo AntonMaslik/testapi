@@ -4,7 +4,7 @@ import { UserController } from './users/users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entity//user.entity';
 import { TaskEntity } from 'src/tasks/entity/tasks.entity';
-import { RolesEntity } from 'src/auth/roles/roles.entity';
+import { RolesEntity } from 'src/auth/roles/entity/roles.entity';
 import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
 
 @Module({
