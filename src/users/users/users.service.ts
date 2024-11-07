@@ -1,12 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entity/user.entity';
-import { createQueryBuilder, In, MoreThan, Repository } from 'typeorm';
+import { In, MoreThan, Repository, UpdateResult } from 'typeorm';
 import { UserCreateRequestDto } from '../dto/user-create-request.dto';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
 import { TaskEntity } from 'src/tasks/entity/tasks.entity';
 import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
 import { SummaryInfo } from 'src/types/summary';
+import { isAdmin } from 'src/auth/roles/helpers/helperIsAdmin';
 
 @Injectable()
 export class UserService {
@@ -19,70 +24,74 @@ export class UserService {
         private workspacesRepository: Repository<WorkspaceEntity>,
     ) {}
 
-    async getAllUsers() {
-        return this.usersRepository.find();
+    async createUser(
+        userCreateRequestDto: UserCreateRequestDto,
+    ): Promise<UserEntity> {
+        return this.usersRepository.save(userCreateRequestDto);
     }
 
-    async getUserById(id: number) {
-        const user = await this.usersRepository.findOne({
-            where: {
-                id: id,
-            },
-            relations: ['roles'],
-        });
-        if (user) {
-            return user;
+    async getUserById(user: UserEntity, id: number): Promise<UserEntity> {
+        if (isAdmin(user)) {
+            return this.usersRepository.findOne({
+                where: {
+                    id: id,
+                },
+            });
+        } else {
+            if (user.id != id) {
+                throw new ForbiddenException('No access!');
+            }
+
+            return this.usersRepository.findOne({
+                where: {
+                    id: id,
+                },
+            });
         }
-        throw new NotFoundException('Could not find the user');
     }
 
-    async getUserByEmail(email: string) {
-        const user = await this.usersRepository.findOne({
-            where: {
-                email: email,
-            },
-        });
-
-        if (user) {
-            return user;
+    async deleteUserById(user: UserEntity, id: number): Promise<UserEntity> {
+        if (!isAdmin(user)) {
+            throw new ForbiddenException('No access!');
         }
-        return null;
-    }
 
-    async createUser(createUserDto: UserCreateRequestDto): Promise<UserEntity> {
-        return this.usersRepository.save(createUserDto);
-    }
-
-    async deleteUserById(id: number): Promise<UserEntity> {
-        const user = await this.usersRepository.findOne({
+        const findUser = await this.usersRepository.findOne({
             where: {
                 id: id,
             },
         });
-        if (!user) {
-            return null;
+
+        if (!findUser) {
+            throw new NotFoundException('User not find!');
         }
 
-        await this.usersRepository.softRemove(user);
-        return user;
+        return this.usersRepository.softRemove(findUser);
     }
 
     async updateUserById(
+        user: UserEntity,
         id: number,
-        userDto: UserUpdateRequestDto,
-    ): Promise<UserEntity> {
-        let user = await this.usersRepository.findOne({
-            where: {
-                id: id,
-            },
-        });
-        return this.usersRepository.save({
-            ...user,
-            ...userDto,
-        });
+        userUpdateRequestDto: UserUpdateRequestDto,
+    ): Promise<UpdateResult> {
+        if (isAdmin(user)) {
+            return this.usersRepository.update(id, userUpdateRequestDto);
+        } else {
+            if (user.id != id) {
+                throw new ForbiddenException('Not access!');
+            }
+
+            return this.usersRepository.update(id, userUpdateRequestDto);
+        }
     }
 
-    async getSummaryByUserId(id: number): Promise<SummaryInfo> {
+    async getUserByIdSummary(
+        user: UserEntity,
+        id: number,
+    ): Promise<SummaryInfo> {
+        if (!isAdmin(user)) {
+            throw new ForbiddenException('Not access!');
+        }
+
         const now = new Date();
         const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);

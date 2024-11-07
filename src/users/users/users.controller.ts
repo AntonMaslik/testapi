@@ -5,16 +5,15 @@ import {
     Get,
     Param,
     ParseIntPipe,
-    Patch,
-    Request,
+    Put,
 } from '@nestjs/common';
+import { UpdateResult } from 'typeorm';
 import { UserService } from './users.service';
 import { UserEntity } from '../entity/user.entity';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from 'src/auth/roles/roles/roles.enum';
 import { AuthGuard } from 'src/decorators/guard.decorators';
 import { SummaryInfo } from 'src/types/summary';
+import { ExtractUser } from 'src/decorators/extractUser.decorator';
 
 @AuthGuard()
 @Controller('users')
@@ -22,15 +21,40 @@ export class UserController {
     constructor(private readonly UsersService: UserService) {}
 
     @Get('me')
-    getMe() {}
+    getMe(@ExtractUser() user: UserEntity): Promise<UserEntity> {
+        return this.UsersService.getUserById(user, user.id);
+    }
 
     @Get(':id')
-    getUserById() {}
+    getUserById(
+        @ExtractUser() user: UserEntity,
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<UserEntity> {
+        return this.UsersService.getUserById(user, id);
+    }
 
-    getUserByIdSummary() {}
+    @Get('summary/:id')
+    getUserByIdSummary(
+        @ExtractUser() user: UserEntity,
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<SummaryInfo> {
+        return this.UsersService.getUserByIdSummary(user, id);
+    }
 
-    deleteUserById() {}
+    @Delete()
+    deleteUserById(
+        @ExtractUser() user: UserEntity,
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<UserEntity> {
+        return this.UsersService.deleteUserById(user, id);
+    }
 
     @Put(':id')
-    updateUserById() {}
+    updateUserById(
+        @ExtractUser() user: UserEntity,
+        @Param('id', ParseIntPipe) id: number,
+        @Body() userUpdateRequestDto: UserUpdateRequestDto,
+    ): Promise<UpdateResult> {
+        return this.UsersService.updateUserById(user, id, userUpdateRequestDto);
+    }
 }
