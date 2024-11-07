@@ -36,6 +36,7 @@ export class UserService {
                 where: {
                     id: id,
                 },
+                relations: ['roles'],
             });
         } else {
             if (user.id != id) {
@@ -46,6 +47,7 @@ export class UserService {
                 where: {
                     id: id,
                 },
+                relations: ['roles'],
             });
         }
     }
