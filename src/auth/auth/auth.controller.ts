@@ -34,9 +34,9 @@ export class AuthController {
     @Post('signin')
     async signin(
         @Res({ passthrough: true }) res: Response,
-        @Body() data: SignInDto,
+        @Body() SignInDto: SignInDto,
     ): Promise<{ accessToken }> {
-        const tokens = await this.authService.signIn(data);
+        const tokens = await this.authService.signIn(SignInDto);
 
         res.cookie('refreshToken', tokens.refreshToken, {
             maxAge: 1000 * 60 * 15,
