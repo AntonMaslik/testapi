@@ -1,11 +1,18 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskEntity } from 'src/tasks/entity/tasks.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import { In, Repository, UpdateResult } from 'typeorm';
 import { CreateWorkspaceDto } from '../dto/create-workspace-dto';
 import { UpdateWorkspaceDto } from '../dto/update-workspace-dto';
 import { WorkspaceEntity } from '../entity/workspace.entity';
 import { BasicInfo } from 'src/types/basicInfo';
+import { ExtractUser } from 'src/decorators/extractUser.decorator';
+import { UserEntity } from 'src/users/entity/user.entity';
+import { isAdmin } from 'src/auth/roles/helpers/helperIsAdmin';
 
 @Injectable()
 export class WorkspaceService {
@@ -16,165 +23,181 @@ export class WorkspaceService {
         private tasksRepository: Repository<TaskEntity>,
     ) {}
 
-    async createWorkspaceForAdmin(
+    async createWorkspace(
+        user: UserEntity,
         createWorkspaceDto: CreateWorkspaceDto,
     ): Promise<WorkspaceEntity> {
-        return await this.workspacesRepository.save(createWorkspaceDto);
+        if (isAdmin(user)) {
+            return this.workspacesRepository.save(createWorkspaceDto);
+        } else {
+            if (createWorkspaceDto.userId != user.id) {
+                throw new ForbiddenException('Not access!');
+            }
+
+            return this.workspacesRepository.save(createWorkspaceDto);
+        }
     }
 
-    async updateWorkspaceForAdmin(
+    async updateWorkspaceById(
+        user: UserEntity,
         updateWorkspaceDto: UpdateWorkspaceDto,
     ): Promise<UpdateResult> {
-        return await this.workspacesRepository.update(
-            updateWorkspaceDto.id,
-            updateWorkspaceDto,
-        );
+        if (isAdmin(user)) {
+            return this.workspacesRepository.update(
+                updateWorkspaceDto.id,
+                updateWorkspaceDto,
+            );
+        } else {
+            if (updateWorkspaceDto.userId != user.id) {
+                throw new ForbiddenException('Not access!');
+            }
+
+            return this.workspacesRepository.update(
+                updateWorkspaceDto.id,
+                updateWorkspaceDto,
+            );
+        }
     }
 
-    async deleteWorkspaceForAdmin(
-        workspaceId: number,
+    async deleteWorkspaceById(
+        user: UserEntity,
+        id: number,
     ): Promise<WorkspaceEntity> {
-        const workspace = await this.workspacesRepository.findOne({
-            where: {
-                id: workspaceId,
-            },
-        });
+        if (isAdmin(user)) {
+            const workspace = await this.workspacesRepository.findOne({
+                where: {
+                    id: id,
+                },
+            });
 
-        return this.workspacesRepository.softRemove(workspace);
+            if (!workspace) {
+                throw new NotFoundException('Not find workspace!');
+            }
+
+            return this.workspacesRepository.softRemove(workspace);
+        } else {
+            const workspace = await this.workspacesRepository.findOne({
+                where: { id: id, userId: user.id },
+            });
+
+            if (!workspace) {
+                throw new NotFoundException('Not find workspace!');
+            }
+
+            return this.workspacesRepository.softRemove(workspace);
+        }
     }
 
-    async getWorkspaceByIdForAdmin(
-        workspaceId: number,
-    ): Promise<WorkspaceEntity> {
-        return this.workspacesRepository.findOne({
-            where: { id: workspaceId },
-        });
+    async getTasksInWorkspaceById(
+        user: UserEntity,
+        id: number,
+    ): Promise<TaskEntity[]> {
+        if (isAdmin(user)) {
+            return this.tasksRepository.find({
+                where: {
+                    workspaceId: id,
+                },
+            });
+        } else {
+            const workspaces = await this.workspacesRepository.find({
+                where: {
+                    userId: user.id,
+                },
+            });
+
+            if (!workspaces) {
+                throw new NotFoundException('Workspace not found!');
+            }
+
+            return await this.tasksRepository.find({
+                where: {
+                    workspaceId: In(
+                        workspaces.map((workspace) => workspace.id),
+                    ),
+                },
+            });
+        }
     }
 
-    async getWorkspacesByIdUserForAdmin(
+    async getWorkspaceBasicInfoById(
+        user: UserEntity,
+        id: number,
+    ): Promise<BasicInfo> {
+        if (isAdmin(user)) {
+            const basicInfo = await this.tasksRepository
+                .createQueryBuilder('tasks')
+                .leftJoin('tasks.workspace', 'workspaces')
+                .select(
+                    'COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
+                    'completedTasks',
+                )
+                .addSelect(
+                    'COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
+                    'notCompletedTasks',
+                )
+                .addSelect('COUNT(tasks.id)', 'countTasks')
+                .where('tasks.workspaceId = :workspaceId', {
+                    workspaceId: id,
+                })
+                .getRawOne();
+
+            return {
+                countTaskAll: basicInfo.countTasks,
+                countTaskNotCompleted: basicInfo.notCompletedTasks,
+                countTaskCompleted: basicInfo.completedTasks,
+            };
+        } else {
+            const workspace = await this.workspacesRepository.findOne({
+                where: { id: id },
+            });
+
+            if (!workspace || user.id != workspace.userId) {
+                throw new ForbiddenException(
+                    'Not access or not find workspace!',
+                );
+            }
+
+            const basicInfo = await this.tasksRepository
+                .createQueryBuilder('tasks')
+                .leftJoin('tasks.workspace', 'workspaces')
+                .select(
+                    'COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
+                    'completedTasks',
+                )
+                .addSelect(
+                    'COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
+                    'notCompletedTasks',
+                )
+                .addSelect('COUNT(tasks.id)', 'countTasks')
+                .where('tasks.workspaceId = :workspaceId', {
+                    workspaceId: id,
+                })
+                .getRawOne();
+
+            return {
+                countTaskAll: basicInfo.countTasks,
+                countTaskNotCompleted: basicInfo.notCompletedTasks,
+                countTaskCompleted: basicInfo.completedTasks,
+            };
+        }
+    }
+
+    async getWorkspaceOfByUserId(
+        user: UserEntity,
         userId: number,
     ): Promise<WorkspaceEntity[]> {
-        return this.workspacesRepository.find({
-            where: {
-                userId: userId,
-            },
-        });
-    }
+        if (isAdmin(user)) {
+            return this.workspacesRepository.find({
+                where: { userId: userId },
+            });
+        } else {
+            if (user.id != userId) {
+                throw new ForbiddenException('Not access!');
+            }
 
-    async getTasksBasicInfoByWorkspaceIdForAdmin(
-        workspaceId: number,
-    ): Promise<BasicInfo> {
-        const basicInfo = await this.tasksRepository
-            .createQueryBuilder('tasks')
-            .leftJoin('tasks.workspace', 'workspaces')
-            .select(
-                'COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
-                'completedTasks',
-            )
-            .addSelect(
-                'COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
-                'notCompletedTasks',
-            )
-            .addSelect('COUNT(tasks.id)', 'countTasks')
-            .where('tasks.workspaceId = :workspaceId', {
-                workspaceId: workspaceId,
-            })
-            .getRawOne();
-
-        return {
-            countTaskAll: basicInfo.countTasks,
-            countTaskNotCompleted: basicInfo.notCompletedTasks,
-            countTaskCompleted: basicInfo.completedTasks,
-        };
-    }
-
-    async createWorkspaceForUser(
-        userId: number,
-        createWorkspaceDto: CreateWorkspaceDto,
-    ): Promise<WorkspaceEntity> {
-        createWorkspaceDto.userId = userId;
-
-        if (createWorkspaceDto.userId != userId) {
-            throw new ForbiddenException(
-                'You may only  create workspace for you',
-            );
+            return this.workspacesRepository.find({
+                where: { userId: userId },
+            });
         }
-
-        return await this.workspacesRepository.save(createWorkspaceDto);
-    }
-
-    async updateWorkspaceByIdForUser(
-        userId: number,
-        updateWorkspaceDto: UpdateWorkspaceDto,
-    ): Promise<UpdateResult> {
-        updateWorkspaceDto.userId = userId;
-
-        if (updateWorkspaceDto.userId != userId) {
-            throw new ForbiddenException(
-                'You may only  create workspace for you',
-            );
-        }
-
-        return await this.workspacesRepository.update(
-            updateWorkspaceDto.id,
-            updateWorkspaceDto,
-        );
-    }
-
-    async deleteWorkspaceByIdForUser(
-        userId: number,
-        workspaceId: number,
-    ): Promise<WorkspaceEntity> {
-        const workspace = await this.workspacesRepository.findOne({
-            where: {
-                userId: userId,
-                id: workspaceId,
-            },
-        });
-
-        return this.workspacesRepository.softRemove(workspace);
-    }
-
-    async getWorkspaceByIdForUser(
-        userId: number,
-        workspaceId: number,
-    ): Promise<WorkspaceEntity> {
-        return await this.workspacesRepository.findOne({
-            where: {
-                userId: userId,
-                id: workspaceId,
-            },
-        });
-    }
-
-    async getTasksBasicInfoByWorkspaceIdForUser(
-        userId: number,
-        workspaceId: number,
-    ): Promise<BasicInfo> {
-        const basicInfo = await this.tasksRepository
-            .createQueryBuilder('tasks')
-            .leftJoin('tasks.workspace', 'workspaces')
-            .select(
-                'COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
-                'completedTasks',
-            )
-            .addSelect(
-                'COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
-                'notCompletedTasks',
-            )
-            .addSelect('COUNT(tasks.id)', 'countTasks')
-            .where('tasks.workspaceId = :workspaceId', {
-                workspaceId: workspaceId,
-            })
-            .andWhere('workspaces.userId = :userId', {
-                userId: userId,
-            })
-            .getRawOne();
-
-        return {
-            countTaskAll: basicInfo.countTasks,
-            countTaskNotCompleted: basicInfo.notCompletedTasks,
-            countTaskCompleted: basicInfo.completedTasks,
-        };
     }
 }
