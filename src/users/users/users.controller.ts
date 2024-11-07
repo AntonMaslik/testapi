@@ -41,7 +41,7 @@ export class UserController {
         return this.UsersService.getUserByIdSummary(user, id);
     }
 
-    @Delete()
+    @Delete(':id')
     deleteUserById(
         @ExtractUser() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
