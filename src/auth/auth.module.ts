@@ -11,7 +11,7 @@ import { UserService } from 'src/users/users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { RolesEntity } from './roles/entity/roles.entity';
 import { RolesService } from './roles/roles/roles.service';
-import { RolesController } from './roles/roles.controller';
+import { RolesController } from './roles/roles/roles.controller';
 import { TaskEntity } from 'src/tasks/entity/tasks.entity';
 import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
 
