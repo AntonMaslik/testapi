@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { RolesEntity } from '../entity/roles.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -16,15 +20,20 @@ export class RolesService {
     ) {}
 
     async updateRoleByIdUser(
+        user: UserEntity,
         roleUpdateDto: roleUpdateDto,
     ): Promise<UserEntity> {
-        let user = await this.usersRepository.findOne({
+        if (isAdmin(user)) {
+            throw new ForbiddenException('Not access!');
+        }
+
+        let userFound = await this.usersRepository.findOne({
             where: {
                 id: roleUpdateDto.userId,
             },
         });
 
-        if (!user) {
+        if (!userFound) {
             throw new NotFoundException('User not find!');
         }
 
