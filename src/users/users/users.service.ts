@@ -31,7 +31,7 @@ export class UserService {
     }
 
     async getUserById(user: UserEntity, id: number): Promise<UserEntity> {
-        if (isAdmin(user)) {
+        if (await isAdmin(user)) {
             return this.usersRepository.findOne({
                 where: {
                     id: id,
@@ -51,7 +51,7 @@ export class UserService {
     }
 
     async deleteUserById(user: UserEntity, id: number): Promise<UserEntity> {
-        if (!isAdmin(user)) {
+        if (!(await isAdmin(user))) {
             throw new ForbiddenException('No access!');
         }
 
@@ -73,7 +73,7 @@ export class UserService {
         id: number,
         userUpdateRequestDto: UserUpdateRequestDto,
     ): Promise<UpdateResult> {
-        if (isAdmin(user)) {
+        if (await isAdmin(user)) {
             return this.usersRepository.update(id, userUpdateRequestDto);
         } else {
             if (user.id != id) {
@@ -88,7 +88,7 @@ export class UserService {
         user: UserEntity,
         id: number,
     ): Promise<SummaryInfo> {
-        if (!isAdmin(user)) {
+        if (!(await isAdmin(user))) {
             throw new ForbiddenException('Not access!');
         }
 

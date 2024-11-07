@@ -1,12 +1,11 @@
-import { IsArray, IsNotEmpty, IsNumber } from 'class-validator';
-import { RolesEntity } from '../entity/roles.entity';
+import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class roleUpdateDto {
     @IsNotEmpty()
     @IsNumber()
-    userId: number;
+    id: number;
 
     @IsArray()
-    @IsNotEmpty()
-    roles: RolesEntity[];
+    @IsString({ each: true })
+    roles: string[];
 }

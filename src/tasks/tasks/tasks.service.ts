@@ -26,7 +26,7 @@ export class TaskService {
         user: UserEntity,
         taskCreateRequestDto: TaskCreateRequestDto,
     ): Promise<TaskEntity> {
-        if (isAdmin(user)) {
+        if (await isAdmin(user)) {
             return this.tasksRepository.save(taskCreateRequestDto);
         } else {
             const workspace = await this.workspacesRepository.findOne({
@@ -41,7 +41,7 @@ export class TaskService {
     }
 
     async getTasks(user: UserEntity): Promise<TaskEntity[]> {
-        if (isAdmin(user)) {
+        if (await isAdmin(user)) {
             return this.tasksRepository.find();
         } else {
             const workspaces = await this.workspacesRepository.find({
@@ -63,7 +63,7 @@ export class TaskService {
     }
 
     async deleteTasks(user: UserEntity, id: number): Promise<TaskEntity> {
-        if (isAdmin(user)) {
+        if (await isAdmin(user)) {
             const task = await this.tasksRepository.findOne({
                 where: { id },
             });
@@ -101,7 +101,7 @@ export class TaskService {
         taskUpdateRequestDto: TaskUpdateRequestDto,
         id: number,
     ): Promise<UpdateResult> {
-        if (isAdmin(user)) {
+        if (await isAdmin(user)) {
             return this.tasksRepository.update(id, taskUpdateRequestDto);
         } else {
             const workspaces = await this.workspacesRepository.find({
@@ -135,7 +135,7 @@ export class TaskService {
         user: UserEntity,
         taskUpdatePositionRequestDto: TaskUpdatePositionRequestDto,
     ): Promise<UpdateResult> {
-        if (isAdmin(user)) {
+        if (await isAdmin(user)) {
             return this.tasksRepository.update(
                 taskUpdatePositionRequestDto.id,
                 taskUpdatePositionRequestDto,

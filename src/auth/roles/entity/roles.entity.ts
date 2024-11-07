@@ -7,6 +7,5 @@ export class RolesEntity {
     name: string;
 
     @ManyToMany(() => UserEntity, (user) => user.roles)
-    @JoinColumn()
     users?: UserEntity[];
 }
