@@ -6,8 +6,6 @@ import { AuthGuard } from 'src/decorators/guard.decorators';
 import { Response } from 'express';
 import { UpdateResult } from 'typeorm';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from '../roles/roles/roles.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -52,7 +50,6 @@ export class AuthController {
     }
 
     @AuthGuard()
-    @Roles(Role.USER)
     @Post('logout')
     logout(
         @Res({ passthrough: true }) res: Response,
@@ -64,7 +61,6 @@ export class AuthController {
     }
 
     @AuthGuard()
-    @Roles(Role.USER)
     @Post('refresh')
     async refreshTokens(
         @ExtractUser() user: any,

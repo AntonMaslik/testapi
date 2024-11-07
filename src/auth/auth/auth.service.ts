@@ -31,9 +31,11 @@ export class AuthService implements OnModuleInit {
 
     async signUp(signUpDto: SignUpDto): Promise<{ accessToken; refreshToken }> {
         const hashedPassword = await bcrypt.hash(signUpDto.password, 10);
-        const userExists = await this.usersService.getUserByEmail(
-            signUpDto.email,
-        );
+        const userExists = await this.usersRepository.findOne({
+            where: {
+                email: signUpDto.email,
+            },
+        });
 
         if (userExists) {
             throw new BadRequestException('User already exists');
@@ -53,19 +55,23 @@ export class AuthService implements OnModuleInit {
         return tokens;
     }
 
-    async signIn(data: SignInDto) {
-        if (!data.email) {
+    async signIn(signInDto: SignInDto) {
+        if (!signInDto.email) {
             throw new BadRequestException('Please enter e-mail');
         }
 
-        const user = await this.usersService.getUserByEmail(data.email);
+        const user = await this.usersRepository.findOne({
+            where: {
+                email: signInDto.email,
+            },
+        });
 
         if (!user) {
             throw new BadRequestException('User does not exist');
         }
 
         const passwordMatches = await bcrypt.compare(
-            data.password,
+            signInDto.password,
             user.password,
         );
 
@@ -93,7 +99,11 @@ export class AuthService implements OnModuleInit {
     }
 
     async refreshTokens(userId: number, refreshToken: string) {
-        const user = await this.usersService.getUserById(userId);
+        const user = await this.usersRepository.findOne({
+            where: {
+                id: userId,
+            },
+        });
 
         if (!user || !user.refreshToken) {
             throw new ForbiddenException('Access Denied');
@@ -123,7 +133,6 @@ export class AuthService implements OnModuleInit {
                     username,
                 },
                 {
-                    // this.accessTokenSecret
                     secret: this.configService.getOrThrow<string>(
                         'JWT_ACCESS_SECRET',
                     ),
