@@ -12,8 +12,8 @@ import { UserEntity } from 'src/users/entity/user.entity';
 export class AuthController {
     constructor(private authService: AuthService) {}
 
-    @Post('signup')
-    async signup(
+    @Post('sign-up')
+    async signUp(
         @Body() createUserDto: UserCreateRequestDto,
         @Res({ passthrough: true }) res: Response,
     ) {
@@ -31,12 +31,12 @@ export class AuthController {
         };
     }
 
-    @Post('signin')
-    async signin(
+    @Post('sign-in')
+    async signIn(
         @Res({ passthrough: true }) res: Response,
-        @Body() SignInDto: SignInDto,
+        @Body() signInDto: SignInDto,
     ): Promise<{ accessToken }> {
-        const tokens = await this.authService.signIn(SignInDto);
+        const tokens = await this.authService.signIn(signInDto);
 
         res.cookie('refreshToken', tokens.refreshToken, {
             maxAge: 1000 * 60 * 15,
