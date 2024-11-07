@@ -28,5 +28,6 @@ export class UserEntity {
     refreshToken: string;
 
     @ManyToMany(() => RolesEntity, (role) => role.users)
+    @JoinTable()
     roles: RolesEntity[];
 }

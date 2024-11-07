@@ -27,7 +27,7 @@ export class WorkspaceService {
         user: UserEntity,
         createWorkspaceDto: CreateWorkspaceDto,
     ): Promise<WorkspaceEntity> {
-        if (await isAdmin(user)) {
+        if (isAdmin(user)) {
             return this.workspacesRepository.save(createWorkspaceDto);
         } else {
             if (createWorkspaceDto.userId != user.id) {
@@ -42,7 +42,7 @@ export class WorkspaceService {
         user: UserEntity,
         updateWorkspaceDto: UpdateWorkspaceDto,
     ): Promise<UpdateResult> {
-        if (await isAdmin(user)) {
+        if (isAdmin(user)) {
             return this.workspacesRepository.update(
                 updateWorkspaceDto.id,
                 updateWorkspaceDto,
@@ -63,7 +63,7 @@ export class WorkspaceService {
         user: UserEntity,
         id: number,
     ): Promise<WorkspaceEntity> {
-        if (await isAdmin(user)) {
+        if (isAdmin(user)) {
             const workspace = await this.workspacesRepository.findOne({
                 where: {
                     id: id,
@@ -92,7 +92,7 @@ export class WorkspaceService {
         user: UserEntity,
         id: number,
     ): Promise<TaskEntity[]> {
-        if (await isAdmin(user)) {
+        if (isAdmin(user)) {
             return this.tasksRepository.find({
                 where: {
                     workspaceId: id,
@@ -123,7 +123,7 @@ export class WorkspaceService {
         user: UserEntity,
         id: number,
     ): Promise<BasicInfo> {
-        if (await isAdmin(user)) {
+        if (isAdmin(user)) {
             const basicInfo = await this.tasksRepository
                 .createQueryBuilder('tasks')
                 .leftJoin('tasks.workspace', 'workspaces')
@@ -186,7 +186,7 @@ export class WorkspaceService {
         user: UserEntity,
         userId: number,
     ): Promise<WorkspaceEntity[]> {
-        if (await isAdmin(user)) {
+        if (isAdmin(user)) {
             return this.workspacesRepository.find({
                 where: { userId: userId },
             });

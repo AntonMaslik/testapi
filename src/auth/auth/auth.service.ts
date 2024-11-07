@@ -131,12 +131,11 @@ export class AuthService implements OnModuleInit {
     }
 
     async getTokens(userId: number, username: string) {
-        console.log(userId, username);
         const [accessToken, refreshToken] = await Promise.all([
             this.jwtService.signAsync(
                 {
                     sub: userId,
-                    username: username,
+                    username,
                 },
                 {
                     secret: this.configService.getOrThrow<string>(
@@ -148,7 +147,7 @@ export class AuthService implements OnModuleInit {
             this.jwtService.signAsync(
                 {
                     sub: userId,
-                    username: username,
+                    username,
                 },
                 {
                     secret: this.configService.getOrThrow<string>(

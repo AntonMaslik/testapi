@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { RolesEntity } from '../entity/roles.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UserEntity } from 'src/users/entity/user.entity';
 import { roleUpdateDto } from '../dto/role-update-dto';
 import { isAdmin } from '../helpers/helperIsAdmin';
@@ -24,27 +24,23 @@ export class RolesService {
         user: UserEntity,
         roleUpdateDto: roleUpdateDto,
     ): Promise<UserEntity> {
-        if (!(await isAdmin(user))) {
+        if (isAdmin(user)) {
             throw new ForbiddenException('Not access!');
         }
 
         let userFound = await this.usersRepository.findOne({
             where: {
-                id: roleUpdateDto.id,
+                id: roleUpdateDto.userId,
             },
-            relations: ['roles'],
         });
 
         if (!userFound) {
             throw new NotFoundException('User not find!');
         }
 
-        const roles = await this.rolesRepository.findBy({
-            name: In(roleUpdateDto.roles),
+        return this.usersRepository.save({
+            ...user,
+            roles: roleUpdateDto.roles,
         });
-
-        userFound.roles = roles;
-
-        return this.usersRepository.save(userFound);
     }
 }

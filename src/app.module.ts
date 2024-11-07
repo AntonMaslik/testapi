@@ -21,7 +21,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                 password: configService.getOrThrow<string>('POSTGRES_PASSWORD'),
                 database: configService.getOrThrow<string>('POSTGRES_DATABASE'),
                 entities: ['entity/*.entity{.ts,.js}'],
-                synchronize: true,
+                synchronize: false,
                 autoLoadEntities: true,
             }),
             inject: [ConfigService],
