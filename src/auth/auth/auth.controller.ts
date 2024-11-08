@@ -7,8 +7,10 @@ import { Response } from 'express';
 import { UpdateResult } from 'typeorm';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('auth')
+@ApiBearerAuth()
 export class AuthController {
     constructor(private authService: AuthService) {}
 

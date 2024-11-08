@@ -4,8 +4,11 @@ import { RolesService } from './roles.service';
 import { AuthGuard } from 'src/decorators/guard.decorators';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @AuthGuard()
+@ApiTags('Roles')
+@ApiBearerAuth()
 @Controller('auth')
 export class RolesController {
     constructor(private rolesService: RolesService) {}

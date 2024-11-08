@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { CommonEntity } from 'src/common/common.entity';
 import { UserEntity } from 'src/users/entity/user.entity';
 import {
@@ -10,9 +11,11 @@ import {
 
 @Entity('workspaces')
 export class WorkspaceEntity extends CommonEntity {
+    @ApiProperty()
     @PrimaryGeneratedColumn()
     id: number;
 
+    @ApiProperty()
     @Column()
     name: string;
 
@@ -20,9 +23,11 @@ export class WorkspaceEntity extends CommonEntity {
     @JoinColumn({ name: 'userId' })
     user: UserEntity;
 
+    @ApiProperty()
     @Column()
     userId: number;
 
+    @ApiProperty()
     @Column()
     description: string;
 }

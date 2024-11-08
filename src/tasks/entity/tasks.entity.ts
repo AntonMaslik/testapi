@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { CommonEntity } from 'src/common/common.entity';
 import { UserEntity } from 'src/users/entity/user.entity';
@@ -12,18 +13,23 @@ import {
 
 @Entity('tasks')
 export class TaskEntity extends CommonEntity {
+    @ApiProperty()
     @PrimaryGeneratedColumn()
     id: number;
 
+    @ApiProperty()
     @Column()
     name: string;
 
+    @ApiProperty()
     @Column()
     description: string;
 
+    @ApiProperty()
     @Column()
     completed: boolean;
 
+    @ApiProperty()
     @Column()
     position: number;
 
@@ -33,6 +39,7 @@ export class TaskEntity extends CommonEntity {
     @JoinColumn({ name: 'workspaceId' })
     workspace: WorkspaceEntity;
 
+    @ApiProperty()
     @Exclude()
     @Column()
     workspaceId: number;
