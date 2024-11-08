@@ -1,5 +1,5 @@
-#Build app
-##Commands:
+# Build app
+## Commands:
 ```console
 git clone https://github.com/AntonMaslik/testapi
 cd testapi
