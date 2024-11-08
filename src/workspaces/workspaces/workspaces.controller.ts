@@ -67,7 +67,7 @@ export class WorkSpaceController {
         return this.workspacesService.getWorkspaceBasicInfoById(user, id);
     }
 
-    @Get(':id')
+    @Get('of/:id')
     getWorkspacesOfByUserId(
         @ExtractUser() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,

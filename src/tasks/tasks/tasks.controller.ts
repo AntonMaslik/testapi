@@ -23,6 +23,17 @@ import { TaskUpdatePositionRequestDto } from '../dto/task-update-position-reques
 export class TaskController {
     constructor(private tasksServices: TaskService) {}
 
+    @Put('update-position')
+    updatePosTask(
+        @ExtractUser() user: UserEntity,
+        @Body() taskUpdatePositionRequestDto: TaskUpdatePositionRequestDto,
+    ): Promise<UpdateResult> {
+        return this.tasksServices.updatePosTask(
+            user,
+            taskUpdatePositionRequestDto,
+        );
+    }
+
     @Post()
     createTask(
         @ExtractUser() user: UserEntity,
@@ -51,16 +62,5 @@ export class TaskController {
         @Body() taskUpdateRequestDto: TaskUpdateRequestDto,
     ): Promise<UpdateResult> {
         return this.tasksServices.updateTask(user, taskUpdateRequestDto, id);
-    }
-
-    @Put()
-    updatePosTask(
-        @ExtractUser() user: UserEntity,
-        @Body() taskUpdatePositionRequestDto: TaskUpdatePositionRequestDto,
-    ): Promise<UpdateResult> {
-        return this.tasksServices.updatePosTask(
-            user,
-            taskUpdatePositionRequestDto,
-        );
     }
 }
