@@ -1,32 +1,40 @@
-version: '3.7'
+version: '3.5'
 
 services:
-  # PostgreSQL Database Service
   db:
-    image: postgres:13
-    container_name: postgres_db
+    image: postgres
+    restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: testdb
-    ports:
-      - "5432:5432"
+      - POSTGRES_PASSWORD=postgres
+    container_name: postgres
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - '5431:5432'
 
-  # NestJS Application Service
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nest_app
-    env_file:
-      - .env
+    container_name: nest-docker-postgres
+    environment:
+      - PORT=${PORT}
+    ports:
+      - '3000:3000'
     depends_on:
       - db
-    ports:
-      - "3000:3000"
-    command: sh -c "npm run typeorm:run && npm run start:prod"
+    volumes:
+      - ./src:/app/src
+    command: sh -c "npm run typeorm:run && npm run start"
 
-volumes:
-  pg_data:
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    container_name: nest-pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=pgadmin4
+    ports:
+      - '5050:80'
+    depends_on:
+      - db
