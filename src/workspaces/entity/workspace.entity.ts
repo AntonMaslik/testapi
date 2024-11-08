@@ -1,3 +1,4 @@
+import { CommonEntity } from 'src/common/common.entity';
 import { UserEntity } from 'src/users/entity/user.entity';
 import {
     Column,
@@ -8,7 +9,7 @@ import {
 } from 'typeorm';
 
 @Entity('workspaces')
-export class WorkspaceEntity {
+export class WorkspaceEntity extends CommonEntity {
     @PrimaryGeneratedColumn()
     id: number;
 

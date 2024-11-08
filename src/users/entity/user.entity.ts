@@ -7,9 +7,10 @@ import {
 } from 'typeorm';
 import { RolesEntity } from 'src/auth/roles/entity/roles.entity';
 import { Exclude } from 'class-transformer';
+import { CommonEntity } from 'src/common/common.entity';
 
 @Entity('users')
-export class UserEntity {
+export class UserEntity extends CommonEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
