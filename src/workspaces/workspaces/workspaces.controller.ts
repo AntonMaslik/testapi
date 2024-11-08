@@ -18,7 +18,9 @@ import { UserEntity } from 'src/users/entity/user.entity';
 import { UpdateResult } from 'typeorm';
 import { BasicInfo } from 'src/types/basicInfo';
 import { TaskEntity } from 'src/tasks/entity/tasks.entity';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Workspaces')
 @AuthGuard()
 @Controller('workspaces')
 export class WorkSpaceController {

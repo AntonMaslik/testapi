@@ -17,8 +17,10 @@ import { AuthGuard } from 'src/decorators/guard.decorators';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
 import { TaskUpdatePositionRequestDto } from '../dto/task-update-position-request.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @AuthGuard()
+@ApiTags('Tasks')
 @Controller('tasks')
 export class TaskController {
     constructor(private tasksServices: TaskService) {}
