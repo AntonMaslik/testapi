@@ -34,7 +34,9 @@ export class UserEntity extends CommonEntity {
     @Column({ nullable: true })
     refreshToken: string;
 
-    @ManyToMany(() => RolesEntity, (role) => role.users)
+    @ManyToMany(() => RolesEntity, (role) => role.users, {
+        onDelete: 'CASCADE',
+    })
     @JoinTable()
     roles: RolesEntity[];
 }
