@@ -14,12 +14,17 @@ import { UserService } from 'src/users/users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { SignInDto } from '../dto/sign-in-dto';
 import { Role } from '../roles/roles/roles.enum';
+import { RolesEntity } from '../roles/entity/roles.entity';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
     constructor(
         @InjectRepository(UserEntity)
         private usersRepository: Repository<UserEntity>,
+
+        @InjectRepository(RolesEntity)
+        private rolesRepository: Repository<RolesEntity>,
+
         private jwtService: JwtService,
         private usersService: UserService,
         private configService: ConfigService,
@@ -45,12 +50,16 @@ export class AuthService implements OnModuleInit {
             throw new BadRequestException('User already exists');
         }
 
+        const defaultRole = await this.rolesRepository.find({
+            where: { name: Role.USER },
+        });
+
         const newUser = await this.usersService.createUser({
             email: signUpDto.email,
             name: signUpDto.name,
             password: hashedPassword,
             refreshToken: null,
-            roles: [{ name: Role.USER }],
+            roles: defaultRole,
         });
         const tokens = await this.getTokens(newUser.id, newUser.name);
 

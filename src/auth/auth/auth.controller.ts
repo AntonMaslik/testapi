@@ -1,5 +1,4 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
-import { UserCreateRequestDto } from 'src/users/dto/user-create-request.dto';
 import { AuthService } from './auth.service';
 import { SignInDto } from '../dto/sign-in-dto';
 import { AuthGuard } from 'src/decorators/guard.decorators';
@@ -8,6 +7,7 @@ import { UpdateResult } from 'typeorm';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { SignUpDto } from '../dto/sign-up-dto';
 
 @Controller('auth')
 @ApiBearerAuth()
@@ -17,10 +17,10 @@ export class AuthController {
     @ApiOperation({ summary: 'Create user from sign up' })
     @Post('sign-up')
     async signUp(
-        @Body() createUserDto: UserCreateRequestDto,
+        @Body() signUpDto: SignUpDto,
         @Res({ passthrough: true }) res: Response,
     ) {
-        const tokens = await this.authService.signUp(createUserDto);
+        const tokens = await this.authService.signUp(signUpDto);
 
         res.cookie('refreshToken', tokens.refreshToken, {
             maxAge: 1000 * 60 * 15,
