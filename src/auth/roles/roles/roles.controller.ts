@@ -4,7 +4,12 @@ import { RolesService } from './roles.service';
 import { AuthGuard } from 'src/decorators/guard.decorators';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiOperation,
+    ApiResponse,
+    ApiTags,
+} from '@nestjs/swagger';
 
 @AuthGuard()
 @ApiTags('Roles')
@@ -13,6 +18,8 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class RolesController {
     constructor(private rolesService: RolesService) {}
 
+    @ApiOperation({ summary: 'Update role user by id (for Admin)' })
+    @ApiResponse({ status: 403, description: 'Forbidden' })
     @Post('assign-role')
     async assignRole(
         @ExtractUser() user: UserEntity,

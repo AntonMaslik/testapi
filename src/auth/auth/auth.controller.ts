@@ -7,13 +7,14 @@ import { Response } from 'express';
 import { UpdateResult } from 'typeorm';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('auth')
 @ApiBearerAuth()
 export class AuthController {
     constructor(private authService: AuthService) {}
 
+    @ApiOperation({ summary: 'Create user from sign up' })
     @Post('sign-up')
     async signUp(
         @Body() createUserDto: UserCreateRequestDto,
@@ -33,6 +34,7 @@ export class AuthController {
         };
     }
 
+    @ApiOperation({ summary: 'Login user with email, password' })
     @Post('sign-in')
     async signIn(
         @Res({ passthrough: true }) res: Response,
@@ -52,6 +54,8 @@ export class AuthController {
         };
     }
 
+    @ApiOperation({ summary: 'Logout user' })
+    @ApiResponse({ status: 401, description: 'Not authoraztion' })
     @AuthGuard()
     @Post('logout')
     logout(
@@ -63,6 +67,8 @@ export class AuthController {
         return this.authService.logout(user.id);
     }
 
+    @ApiOperation({ summary: 'Refresh token user' })
+    @ApiResponse({ status: 401, description: 'Not authoraztion' })
     @AuthGuard()
     @Post('refresh')
     async refreshTokens(

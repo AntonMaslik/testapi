@@ -14,7 +14,12 @@ import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
 import { AuthGuard } from 'src/decorators/guard.decorators';
 import { SummaryInfo } from 'src/types/summary';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiOperation,
+    ApiResponse,
+    ApiTags,
+} from '@nestjs/swagger';
 
 @AuthGuard()
 @ApiTags('Users')
@@ -23,11 +28,27 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class UserController {
     constructor(private readonly UsersService: UserService) {}
 
+    @ApiOperation({ summary: 'Get me' })
+    @ApiResponse({ status: 401, description: 'Not authorization' })
+    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiResponse({
+        status: 200,
+        description: 'The found user',
+        type: UserEntity,
+    })
     @Get('me')
     getMe(@ExtractUser() user: UserEntity): Promise<UserEntity> {
         return this.UsersService.getUserById(user, user.id);
     }
 
+    @ApiOperation({ summary: 'Get user by id' })
+    @ApiResponse({ status: 401, description: 'Not authorization' })
+    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiResponse({
+        status: 200,
+        description: 'The found user',
+        type: UserEntity,
+    })
     @Get(':id')
     getUserById(
         @ExtractUser() user: UserEntity,
@@ -36,6 +57,13 @@ export class UserController {
         return this.UsersService.getUserById(user, id);
     }
 
+    @ApiOperation({ summary: 'Get info summary by user' })
+    @ApiResponse({ status: 401, description: 'Not authorization' })
+    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiResponse({
+        status: 200,
+        description: 'The found summary from user',
+    })
     @Get('summary/:id')
     getUserByIdSummary(
         @ExtractUser() user: UserEntity,
@@ -44,6 +72,14 @@ export class UserController {
         return this.UsersService.getUserByIdSummary(user, id);
     }
 
+    @ApiOperation({ summary: 'Delete user by id' })
+    @ApiResponse({ status: 401, description: 'Not authorization' })
+    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiResponse({
+        status: 200,
+        description: 'The user deleted',
+        type: UserEntity,
+    })
     @Delete(':id')
     deleteUserById(
         @ExtractUser() user: UserEntity,
@@ -52,6 +88,14 @@ export class UserController {
         return this.UsersService.deleteUserById(user, id);
     }
 
+    @ApiOperation({ summary: 'Update user by id' })
+    @ApiResponse({ status: 401, description: 'Not authorization' })
+    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiResponse({
+        status: 200,
+        description: 'The user updated!',
+        type: UpdateResult,
+    })
     @Put(':id')
     updateUserById(
         @ExtractUser() user: UserEntity,

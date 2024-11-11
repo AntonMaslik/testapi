@@ -17,7 +17,12 @@ import { AuthGuard } from 'src/decorators/guard.decorators';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
 import { TaskUpdatePositionRequestDto } from '../dto/task-update-position-request.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiOperation,
+    ApiResponse,
+    ApiTags,
+} from '@nestjs/swagger';
 
 @AuthGuard()
 @ApiTags('Tasks')
@@ -26,6 +31,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 export class TaskController {
     constructor(private tasksServices: TaskService) {}
 
+    @ApiOperation({ summary: 'Update task position' })
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 404, description: 'Not found' })
+    @ApiResponse({
+        status: 200,
+        description: 'Update task',
+        type: UpdateResult,
+    })
     @Put('update-position')
     updatePosTask(
         @ExtractUser() user: UserEntity,
@@ -37,6 +50,9 @@ export class TaskController {
         );
     }
 
+    @ApiOperation({ summary: 'Create task' })
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 404, description: 'Not found' })
     @Post()
     createTask(
         @ExtractUser() user: UserEntity,
@@ -45,11 +61,17 @@ export class TaskController {
         return this.tasksServices.createTask(user, taskCreateRequestDto);
     }
 
+    @ApiOperation({ summary: 'Get task' })
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 404, description: 'Not found' })
     @Get()
     getTasks(@ExtractUser() user: UserEntity): Promise<TaskEntity[]> {
         return this.tasksServices.getTasks(user);
     }
 
+    @ApiOperation({ summary: 'Delete task' })
+    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiResponse({ status: 404, description: 'Not found' })
     @Delete(':id')
     deleteTask(
         @ExtractUser() user: UserEntity,
@@ -58,6 +80,9 @@ export class TaskController {
         return this.tasksServices.deleteTasks(user, id);
     }
 
+    @ApiOperation({ summary: 'Update task' })
+    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiResponse({ status: 404, description: 'Not found' })
     @Put(':id')
     updateTask(
         @ExtractUser() user: UserEntity,
