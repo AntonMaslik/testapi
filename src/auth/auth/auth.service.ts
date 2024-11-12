@@ -17,7 +17,7 @@ import { Role } from '../roles/roles/roles.enum';
 import { RolesEntity } from '../roles/entity/roles.entity';
 
 @Injectable()
-export class AuthService implements OnModuleInit {
+export class AuthService {
     constructor(
         @InjectRepository(UserEntity)
         private usersRepository: Repository<UserEntity>,
@@ -29,10 +29,6 @@ export class AuthService implements OnModuleInit {
         private usersService: UserService,
         private configService: ConfigService,
     ) {}
-
-    onModuleInit() {
-        // this.accessTokenSecret = this.configService.getOrThrow('asda');
-    }
 
     async signUp(signUpDto: SignUpDto): Promise<{ accessToken; refreshToken }> {
         const userExists = await this.usersRepository.findOne({
@@ -139,6 +135,8 @@ export class AuthService implements OnModuleInit {
         userId: number,
         username: string,
     ): Promise<{ accessToken; refreshToken }> {
+        const jwtConfig = this.configService.get('jwt');
+
         const [accessToken, refreshToken] = await Promise.all([
             this.jwtService.signAsync(
                 {
@@ -146,10 +144,8 @@ export class AuthService implements OnModuleInit {
                     username,
                 },
                 {
-                    secret: this.configService.getOrThrow<string>(
-                        'JWT_ACCESS_SECRET',
-                    ),
-                    expiresIn: '7d',
+                    secret: jwtConfig.accessSecret,
+                    expiresIn: jwtConfig.accessTokenExpiration,
                 },
             ),
             this.jwtService.signAsync(
@@ -158,10 +154,8 @@ export class AuthService implements OnModuleInit {
                     username,
                 },
                 {
-                    secret: this.configService.getOrThrow<string>(
-                        'JWT_REFRESH_SECRET',
-                    ),
-                    expiresIn: '7d',
+                    secret: jwtConfig.refreshSecret,
+                    expiresIn: jwtConfig.refreshTokenExpiration,
                 },
             ),
         ]);

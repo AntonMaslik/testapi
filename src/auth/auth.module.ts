@@ -8,12 +8,13 @@ import { UserEntity } from 'src/users/entity/user.entity';
 import { RefreshTokenStrategy } from './auth/refreshToken.strategy';
 import { AccessTokenStrategy } from './auth/jwt.strategy';
 import { UserService } from 'src/users/users/users.service';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RolesEntity } from './roles/entity/roles.entity';
 import { RolesService } from './roles/roles/roles.service';
 import { RolesController } from './roles/roles/roles.controller';
 import { TaskEntity } from 'src/tasks/entity/tasks.entity';
 import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
+import jwtConfig from 'src/config/jwt.config';
 
 @Module({
     imports: [
@@ -25,6 +26,9 @@ import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
         ]),
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.register({}),
+        ConfigModule.forRoot({
+            load: [jwtConfig],
+        }),
     ],
     providers: [
         AuthService,
