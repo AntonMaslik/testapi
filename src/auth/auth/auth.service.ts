@@ -2,7 +2,6 @@ import {
     BadRequestException,
     Injectable,
     ForbiddenException,
-    OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, UpdateResult } from 'typeorm';
