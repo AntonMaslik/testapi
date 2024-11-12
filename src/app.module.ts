@@ -7,23 +7,14 @@ import { TaskModule } from './tasks/tasks.module';
 import { WorkspaceModule } from './workspaces/workspaces.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import databaseConfig from './config/database.config';
 
 @Module({
     imports: [
         ConfigModule.forRoot({ envFilePath: `.env`, isGlobal: true }),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
-            useFactory: (configService: ConfigService) => ({
-                type: 'postgres',
-                host: configService.getOrThrow<string>('POSTGRES_HOST'),
-                port: +configService.getOrThrow<number>('POSTGRES_PORT'),
-                username: configService.getOrThrow<string>('POSTGRES_USER'),
-                password: configService.getOrThrow<string>('POSTGRES_PASSWORD'),
-                database: configService.getOrThrow<string>('POSTGRES_DATABASE'),
-                entities: ['entity/*.entity{.ts,.js}'],
-                synchronize: false,
-                autoLoadEntities: true,
-            }),
+            useFactory: databaseConfig,
             inject: [ConfigService],
         }),
         UserModule,
