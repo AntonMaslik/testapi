@@ -24,7 +24,7 @@ export class RolesController {
     async assignRole(
         @ExtractUser() user: UserEntity,
         @Body() roleUpdateDto: roleUpdateDto,
-    ) {
+    ): Promise<UserEntity> {
         return this.rolesService.updateRoleByIdUser(user, roleUpdateDto);
     }
 }

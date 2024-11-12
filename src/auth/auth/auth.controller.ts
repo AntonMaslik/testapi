@@ -19,7 +19,7 @@ export class AuthController {
     async signUp(
         @Body() signUpDto: SignUpDto,
         @Res({ passthrough: true }) res: Response,
-    ) {
+    ): Promise<{ accessToken }> {
         const tokens = await this.authService.signUp(signUpDto);
 
         res.cookie('refreshToken', tokens.refreshToken, {

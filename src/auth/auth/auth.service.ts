@@ -5,7 +5,7 @@ import {
     OnModuleInit,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { UserEntity } from '../../users/entity/user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -68,7 +68,7 @@ export class AuthService implements OnModuleInit {
         return tokens;
     }
 
-    async signIn(signInDto: SignInDto) {
+    async signIn(signInDto: SignInDto): Promise<{ accessToken; refreshToken }> {
         if (!signInDto.email) {
             throw new BadRequestException('Please enter e-mail');
         }
@@ -99,11 +99,11 @@ export class AuthService implements OnModuleInit {
         return tokens;
     }
 
-    async logout(userId: number) {
+    async logout(userId: number): Promise<UpdateResult> {
         return this.usersRepository.update(userId, { refreshToken: null });
     }
 
-    async updateRefreshToken(id: number, refreshToken: string) {
+    async updateRefreshToken(id: number, refreshToken: string): Promise<void> {
         const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
         await this.usersRepository.update(id, {
@@ -111,7 +111,10 @@ export class AuthService implements OnModuleInit {
         });
     }
 
-    async refreshTokens(userId: number, refreshToken: string) {
+    async refreshTokens(
+        userId: number,
+        refreshToken: string,
+    ): Promise<{ accessToken; refreshToken }> {
         const user = await this.usersRepository.findOne({
             where: {
                 id: userId,
@@ -139,7 +142,10 @@ export class AuthService implements OnModuleInit {
         return tokens;
     }
 
-    async getTokens(userId: number, username: string) {
+    async getTokens(
+        userId: number,
+        username: string,
+    ): Promise<{ accessToken; refreshToken }> {
         const [accessToken, refreshToken] = await Promise.all([
             this.jwtService.signAsync(
                 {
