@@ -115,23 +115,45 @@ export class UserService {
         const workspacesUserId = workspacesUser.map(
             (workspace) => workspace.id,
         );
-        const countTask = await this.tasksRepository.count({
-            where: {
-                workspaceId: In(workspacesUserId),
-            },
-        });
-        const countTaskCompleted = await this.tasksRepository.count({
-            where: {
-                workspaceId: In(workspacesUserId),
-                completed: true,
-            },
-        });
-        const countTaskNotCompleted = await this.tasksRepository.count({
-            where: {
-                workspaceId: In(workspacesUserId),
-                completed: false,
-            },
-        });
+
+        // const countTask = await this.tasksRepository.count({
+        //     where: {
+        //         workspaceId: In(workspacesUserId),
+        //     },
+        // });
+        // const countTaskCompleted = await this.tasksRepository.count({
+        //     where: {
+        //         workspaceId: In(workspacesUserId),
+        //         completed: true,
+        //     },
+        // });
+        // const countTaskNotCompleted = await this.tasksRepository.count({
+        //     where: {
+        //         workspaceId: In(workspacesUserId),
+        //         completed: false,
+        //     },
+        // });
+
+        const [countTask, countTaskCompleted, countTaskNotCompleted] =
+            await Promise.all([
+                this.tasksRepository.count({
+                    where: {
+                        workspaceId: In(workspacesUserId),
+                    },
+                }),
+                this.tasksRepository.count({
+                    where: {
+                        workspaceId: In(workspacesUserId),
+                        completed: true,
+                    },
+                }),
+                this.tasksRepository.count({
+                    where: {
+                        workspaceId: In(workspacesUserId),
+                        completed: false,
+                    },
+                }),
+            ]);
 
         const [tasksLast30Days, tasksLast7Days, tasksLast24Hours] =
             await Promise.all([
