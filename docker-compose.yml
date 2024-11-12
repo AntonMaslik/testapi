@@ -33,7 +33,7 @@ services:
       - db
     volumes:
       - ./src:/app/src
-    command: sh -c "npm run typeorm:run && npm run start"
+    command: sh -c "npm run start"
     env_file:
       - .env 
 
