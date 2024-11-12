@@ -39,7 +39,6 @@ export class AuthService implements OnModuleInit {
             throw new BadRequestException('Not found arguments in request');
         }
 
-        const hashedPassword = await bcrypt.hash(signUpDto.password, 10);
         const userExists = await this.usersRepository.findOne({
             where: {
                 email: signUpDto.email,
@@ -53,6 +52,8 @@ export class AuthService implements OnModuleInit {
         const defaultRole = await this.rolesRepository.find({
             where: { name: Role.USER },
         });
+
+        const hashedPassword = await bcrypt.hash(signUpDto.password, 10);
 
         const newUser = await this.usersService.createUser({
             email: signUpDto.email,
