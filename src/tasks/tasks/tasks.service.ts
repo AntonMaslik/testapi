@@ -52,12 +52,12 @@ export class TaskService {
                 throw new NotFoundException('Workspaces not found!');
             }
 
-            const workspacesIds = workspaces.map(
+            const workspacesUserIds = workspaces.map(
                 (workspace) => workspace.userId,
             );
 
             return this.tasksRepository.find({
-                where: { workspaceId: In(workspacesIds) },
+                where: { workspaceId: In(workspacesUserIds) },
             });
         }
     }
@@ -77,14 +77,14 @@ export class TaskService {
                 throw new NotFoundException('Workspaces not found!');
             }
 
-            const workspacesIds = workspaces.map(
+            const workspacesUserIds = workspaces.map(
                 (workspace) => workspace.userId,
             );
 
             const task = await this.tasksRepository.findOne({
                 where: {
                     id,
-                    workspaceId: In(workspacesIds),
+                    workspaceId: In(workspacesUserIds),
                 },
             });
 
@@ -112,14 +112,14 @@ export class TaskService {
                 throw new NotFoundException('Workspaces not found!');
             }
 
-            const workspacesIds = workspaces.map(
+            const workspacesUserIds = workspaces.map(
                 (workspace) => workspace.userId,
             );
 
             const task = await this.tasksRepository.findOne({
                 where: {
                     id,
-                    workspaceId: In(workspacesIds),
+                    workspaceId: In(workspacesUserIds),
                 },
             });
 
@@ -149,14 +149,14 @@ export class TaskService {
                 throw new NotFoundException('Workspaces not found!');
             }
 
-            const workspacesIds = workspaces.map(
+            const workspacesUserIds = workspaces.map(
                 (workspace) => workspace.userId,
             );
 
             const task = await this.tasksRepository.findOne({
                 where: {
                     id: taskUpdatePositionRequestDto.id,
-                    workspaceId: In(workspacesIds),
+                    workspaceId: In(workspacesUserIds),
                 },
             });
 
