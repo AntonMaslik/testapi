@@ -28,7 +28,7 @@ export class RolesService {
             throw new ForbiddenException('Not access!');
         }
 
-        let userFound = await this.usersRepository.findOne({
+        const userFound = await this.usersRepository.findOne({
             where: {
                 id: roleUpdateDto.id,
             },
