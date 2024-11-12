@@ -39,7 +39,7 @@ export class UserService {
                 relations: ['roles'],
             });
         } else {
-            if (user.id != id) {
+            if (user.id !== id) {
                 throw new ForbiddenException('No access!');
             }
 
@@ -78,7 +78,7 @@ export class UserService {
         if (await isAdmin(user)) {
             return this.usersRepository.update(id, userUpdateRequestDto);
         } else {
-            if (user.id != id) {
+            if (user.id !== id) {
                 throw new ForbiddenException('Not access!');
             }
 

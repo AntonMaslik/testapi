@@ -30,7 +30,7 @@ export class WorkspaceService {
         if (await isAdmin(user)) {
             return this.workspacesRepository.save(createWorkspaceDto);
         } else {
-            if (createWorkspaceDto.userId != user.id) {
+            if (createWorkspaceDto.userId !== user.id) {
                 throw new ForbiddenException('Not access!');
             }
 
@@ -48,7 +48,7 @@ export class WorkspaceService {
                 updateWorkspaceDto,
             );
         } else {
-            if (updateWorkspaceDto.userId != user.id) {
+            if (updateWorkspaceDto.userId !== user.id) {
                 throw new ForbiddenException('Not access!');
             }
 
@@ -151,7 +151,7 @@ export class WorkspaceService {
                 where: { id: id },
             });
 
-            if (!workspace || user.id != workspace.userId) {
+            if (!workspace || user.id !== workspace.userId) {
                 throw new ForbiddenException(
                     'Not access or not find workspace!',
                 );
@@ -191,7 +191,7 @@ export class WorkspaceService {
                 where: { userId: userId },
             });
         } else {
-            if (user.id != userId) {
+            if (user.id !== userId) {
                 throw new ForbiddenException('Not access!');
             }
 
