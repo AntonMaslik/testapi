@@ -11,7 +11,7 @@ import { UpdateResult } from 'typeorm';
 import { UserService } from './users.service';
 import { UserEntity } from '../entity/user.entity';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
-import { AuthGuard } from 'src/decorators/guard.decorators';
+import { AuthGuard } from 'src/decorators/guards.decorators';
 import { SummaryInfo } from 'src/types/summary';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import {

@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from '../dto/sign-in-dto';
-import { AuthGuard, RefreshGuard } from 'src/decorators/guard.decorators';
+import { AuthGuard, RefreshGuard } from 'src/decorators/guards.decorators';
 import { Response } from 'express';
 import { UpdateResult } from 'typeorm';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';

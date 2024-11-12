@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { roleUpdateDto } from '../dto/role-update-dto';
 import { RolesService } from './roles.service';
-import { AuthGuard } from 'src/decorators/guard.decorators';
+import { AuthGuard } from 'src/decorators/guards.decorators';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
 import {
