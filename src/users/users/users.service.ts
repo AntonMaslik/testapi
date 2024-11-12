@@ -31,18 +31,9 @@ export class UserService {
     }
 
     async getUserById(user: UserEntity, id: number): Promise<UserEntity> {
-        if (await isAdmin(user)) {
-            return this.usersRepository.findOne({
-                where: {
-                    id: id,
-                },
-                relations: ['roles'],
-            });
-        } else {
-            if (user.id !== id) {
-                throw new ForbiddenException('No access!');
-            }
+        const isAdminStatus = await isAdmin(user);
 
+        if (isAdminStatus) {
             return this.usersRepository.findOne({
                 where: {
                     id: id,
@@ -50,10 +41,23 @@ export class UserService {
                 relations: ['roles'],
             });
         }
+
+        if (user.id !== id) {
+            throw new ForbiddenException('No access!');
+        }
+
+        return this.usersRepository.findOne({
+            where: {
+                id: id,
+            },
+            relations: ['roles'],
+        });
     }
 
     async deleteUserById(user: UserEntity, id: number): Promise<UserEntity> {
-        if (!(await isAdmin(user))) {
+        const isAdminStatus = await isAdmin(user);
+
+        if (!isAdminStatus) {
             throw new ForbiddenException('No access!');
         }
 
@@ -75,22 +79,26 @@ export class UserService {
         id: number,
         userUpdateRequestDto: UserUpdateRequestDto,
     ): Promise<UpdateResult> {
-        if (await isAdmin(user)) {
-            return this.usersRepository.update(id, userUpdateRequestDto);
-        } else {
-            if (user.id !== id) {
-                throw new ForbiddenException('Not access!');
-            }
+        const isAdminStatus = await isAdmin(user);
 
+        if (isAdminStatus) {
             return this.usersRepository.update(id, userUpdateRequestDto);
         }
+
+        if (user.id !== id) {
+            throw new ForbiddenException('Not access!');
+        }
+
+        return this.usersRepository.update(id, userUpdateRequestDto);
     }
 
     async getUserByIdSummary(
         user: UserEntity,
         id: number,
     ): Promise<SummaryInfo> {
-        if (!(await isAdmin(user))) {
+        const isAdminStatus = await isAdmin(user);
+
+        if (!isAdminStatus) {
             throw new ForbiddenException('Not access!');
         }
 

@@ -26,7 +26,9 @@ export class TaskService {
         user: UserEntity,
         taskCreateRequestDto: TaskCreateRequestDto,
     ): Promise<TaskEntity> {
-        if (await isAdmin(user)) {
+        const isAdminStatus = await isAdmin(user);
+
+        if (isAdminStatus) {
             return this.tasksRepository.save(taskCreateRequestDto);
         }
 
@@ -42,7 +44,9 @@ export class TaskService {
     }
 
     async getTasks(user: UserEntity): Promise<TaskEntity[]> {
-        if (await isAdmin(user)) {
+        const isAdminStatus = await isAdmin(user);
+
+        if (isAdminStatus) {
             return this.tasksRepository.find();
         }
 
@@ -64,7 +68,9 @@ export class TaskService {
     }
 
     async deleteTasks(user: UserEntity, id: number): Promise<TaskEntity> {
-        if (await isAdmin(user)) {
+        const isAdminStatus = await isAdmin(user);
+
+        if (isAdminStatus) {
             const task = await this.tasksRepository.findOne({
                 where: { id },
             });
@@ -102,7 +108,9 @@ export class TaskService {
         taskUpdateRequestDto: TaskUpdateRequestDto,
         id: number,
     ): Promise<UpdateResult> {
-        if (await isAdmin(user)) {
+        const isAdminStatus = await isAdmin(user);
+
+        if (isAdminStatus) {
             return this.tasksRepository.update(id, taskUpdateRequestDto);
         }
 
@@ -136,7 +144,9 @@ export class TaskService {
         user: UserEntity,
         taskUpdatePositionRequestDto: TaskUpdatePositionRequestDto,
     ): Promise<UpdateResult> {
-        if (await isAdmin(user)) {
+        const isAdminStatus = await isAdmin(user);
+
+        if (isAdminStatus) {
             return this.tasksRepository.update(
                 taskUpdatePositionRequestDto.id,
                 taskUpdatePositionRequestDto,

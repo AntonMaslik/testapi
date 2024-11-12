@@ -24,7 +24,9 @@ export class RolesService {
         user: UserEntity,
         roleUpdateDto: roleUpdateDto,
     ): Promise<UserEntity> {
-        if (!(await isAdmin(user))) {
+        const isAdminStatus = await isAdmin(user);
+
+        if (!isAdminStatus) {
             throw new ForbiddenException('Not access!');
         }
 
