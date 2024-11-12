@@ -35,10 +35,6 @@ export class AuthService implements OnModuleInit {
     }
 
     async signUp(signUpDto: SignUpDto): Promise<{ accessToken; refreshToken }> {
-        if (!signUpDto.password || !signUpDto.email || !signUpDto.name) {
-            throw new BadRequestException('Not found arguments in request');
-        }
-
         const userExists = await this.usersRepository.findOne({
             where: {
                 email: signUpDto.email,
@@ -70,10 +66,6 @@ export class AuthService implements OnModuleInit {
     }
 
     async signIn(signInDto: SignInDto): Promise<{ accessToken; refreshToken }> {
-        if (!signInDto.email) {
-            throw new BadRequestException('Please enter e-mail');
-        }
-
         const user = await this.usersRepository.findOne({
             where: {
                 email: signInDto.email,
