@@ -105,7 +105,7 @@ export class WorkspaceService {
                 },
             });
 
-            if (!workspaces) {
+            if (workspaces.length) {
                 throw new NotFoundException('Workspace not found!');
             }
 
