@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from '../dto/sign-in-dto';
-import { AuthGuard } from 'src/decorators/guard.decorators';
+import { AuthGuard, RefreshGuard } from 'src/decorators/guard.decorators';
 import { Response } from 'express';
 import { UpdateResult } from 'typeorm';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
@@ -60,7 +60,7 @@ export class AuthController {
 
     @ApiOperation({ summary: 'Refresh token user' })
     @ApiResponse({ status: 401, description: 'Not authoraztion' })
-    @AuthGuard()
+    @RefreshGuard()
     @Post('refresh')
     async refreshTokens(
         @ExtractUser() user: UserEntity,

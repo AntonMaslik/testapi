@@ -1,14 +1,26 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { UserEntity } from 'src/users/entity/user.entity';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Request } from 'express';
-import { Injectable } from '@nestjs/common';
+
+type JwtPayload = {
+    sub: number;
+    username: string;
+    userDb: UserEntity;
+};
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
     Strategy,
     'jwt-refresh',
 ) {
-    constructor() {
+    constructor(
+        @InjectRepository(UserEntity)
+        private usersRepository: Repository<UserEntity>,
+    ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             secretOrKey: process.env.JWT_SECRET,
@@ -16,12 +28,21 @@ export class RefreshTokenStrategy extends PassportStrategy(
         });
     }
 
-    validate(req: Request, payload: any) {
+    async validate(payload: JwtPayload, req: Request) {
         const refreshToken = req
             .get('Authorization')
             .replace('Bearer', '')
             .trim();
 
-        return { ...payload, refreshToken };
+        const foundUser = await this.usersRepository.findOne({
+            where: { id: payload.sub },
+            relations: ['roles'],
+        });
+
+        if (!foundUser) {
+            throw new NotFoundException('User not found!');
+        }
+
+        return { ...payload, refreshToken, userDb: foundUser };
     }
 }
