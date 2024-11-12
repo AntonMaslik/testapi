@@ -20,8 +20,8 @@ export class tablesRolesMigrate1730892729600 implements MigrationInterface {
                     CONSTRAINT "PK_bb733106f0e30e138ab4940a293" PRIMARY KEY ("usersId", "rolesName"),  
                     CONSTRAINT "FK_9fc16941d812c4d99e9eb6c2798" FOREIGN KEY ("rolesName")
                         REFERENCES roles (name) MATCH SIMPLE  
-                        ON UPDATE NO CASCADE  
-                        ON DELETE NO CASCADE,  
+                        ON UPDATE CASCADE  
+                        ON DELETE CASCADE,
                     CONSTRAINT "FK_df951a64f09865171d2d7a502b1" FOREIGN KEY ("usersId")
                         REFERENCES users (id) MATCH SIMPLE  
                         ON UPDATE CASCADE  
