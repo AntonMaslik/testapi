@@ -8,6 +8,7 @@ import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { SignUpDto } from '../dto/sign-up-dto';
+import { COOKIE_OPTIONS } from 'src/config/cookie-options.config';
 
 @Controller('auth')
 @ApiBearerAuth()
@@ -22,12 +23,7 @@ export class AuthController {
     ): Promise<{ accessToken }> {
         const tokens = await this.authService.signUp(signUpDto);
 
-        res.cookie('refreshToken', tokens.refreshToken, {
-            maxAge: 1000 * 60 * 15,
-            httpOnly: true,
-            secure: false,
-            signed: false,
-        });
+        res.cookie('refreshToken', tokens.refreshToken, COOKIE_OPTIONS);
 
         return {
             accessToken: tokens.accessToken,
@@ -42,12 +38,7 @@ export class AuthController {
     ): Promise<{ accessToken }> {
         const tokens = await this.authService.signIn(signInDto);
 
-        res.cookie('refreshToken', tokens.refreshToken, {
-            maxAge: 1000 * 60 * 15,
-            httpOnly: true,
-            secure: false,
-            signed: false,
-        });
+        res.cookie('refreshToken', tokens.refreshToken, COOKIE_OPTIONS);
 
         return {
             accessToken: tokens.accessToken,
@@ -80,12 +71,7 @@ export class AuthController {
             user.refreshToken,
         );
 
-        res.cookie('refreshToken', tokens.refreshToken, {
-            maxAge: 1000 * 60 * 15,
-            httpOnly: true,
-            secure: false,
-            signed: false,
-        });
+        res.cookie('refreshToken', tokens.refreshToken, COOKIE_OPTIONS);
 
         return {
             accessToken: tokens.accessToken,
