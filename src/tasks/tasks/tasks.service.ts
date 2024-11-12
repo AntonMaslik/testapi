@@ -28,38 +28,39 @@ export class TaskService {
     ): Promise<TaskEntity> {
         if (await isAdmin(user)) {
             return this.tasksRepository.save(taskCreateRequestDto);
+        }
+
+        const workspace = await this.workspacesRepository.findOne({
+            where: { userId: user.id },
+        });
+
+        if (!workspace) {
+            throw new ForbiddenException('No access to the workspace');
         } else {
-            const workspace = await this.workspacesRepository.findOne({
-                where: { userId: user.id },
-            });
-            if (!workspace) {
-                throw new ForbiddenException('No access to the workspace');
-            } else {
-                return this.tasksRepository.save(taskCreateRequestDto);
-            }
+            return this.tasksRepository.save(taskCreateRequestDto);
         }
     }
 
     async getTasks(user: UserEntity): Promise<TaskEntity[]> {
         if (await isAdmin(user)) {
             return this.tasksRepository.find();
-        } else {
-            const workspaces = await this.workspacesRepository.find({
-                where: { userId: user.id },
-            });
-
-            if (workspaces.length) {
-                throw new NotFoundException('Workspaces not found!');
-            }
-
-            const workspacesUserIds = workspaces.map(
-                (workspace) => workspace.userId,
-            );
-
-            return this.tasksRepository.find({
-                where: { workspaceId: In(workspacesUserIds) },
-            });
         }
+
+        const workspaces = await this.workspacesRepository.find({
+            where: { userId: user.id },
+        });
+
+        if (workspaces.length) {
+            throw new NotFoundException('Workspaces not found!');
+        }
+
+        const workspacesUserIds = workspaces.map(
+            (workspace) => workspace.userId,
+        );
+
+        return this.tasksRepository.find({
+            where: { workspaceId: In(workspacesUserIds) },
+        });
     }
 
     async deleteTasks(user: UserEntity, id: number): Promise<TaskEntity> {
@@ -68,32 +69,32 @@ export class TaskService {
                 where: { id },
             });
             return this.tasksRepository.softRemove(task);
-        } else {
-            const workspaces = await this.workspacesRepository.find({
-                where: { userId: user.id },
-            });
-
-            if (workspaces.length) {
-                throw new NotFoundException('Workspaces not found!');
-            }
-
-            const workspacesUserIds = workspaces.map(
-                (workspace) => workspace.userId,
-            );
-
-            const task = await this.tasksRepository.findOne({
-                where: {
-                    id,
-                    workspaceId: In(workspacesUserIds),
-                },
-            });
-
-            if (!task) {
-                throw new NotFoundException('Task not found!');
-            }
-
-            return this.tasksRepository.softRemove(task);
         }
+
+        const workspaces = await this.workspacesRepository.find({
+            where: { userId: user.id },
+        });
+
+        if (workspaces.length) {
+            throw new NotFoundException('Workspaces not found!');
+        }
+
+        const workspacesUserIds = workspaces.map(
+            (workspace) => workspace.userId,
+        );
+
+        const task = await this.tasksRepository.findOne({
+            where: {
+                id,
+                workspaceId: In(workspacesUserIds),
+            },
+        });
+
+        if (!task) {
+            throw new NotFoundException('Task not found!');
+        }
+
+        return this.tasksRepository.softRemove(task);
     }
 
     async updateTask(
@@ -103,32 +104,32 @@ export class TaskService {
     ): Promise<UpdateResult> {
         if (await isAdmin(user)) {
             return this.tasksRepository.update(id, taskUpdateRequestDto);
-        } else {
-            const workspaces = await this.workspacesRepository.find({
-                where: { userId: user.id },
-            });
-
-            if (workspaces.length) {
-                throw new NotFoundException('Workspaces not found!');
-            }
-
-            const workspacesUserIds = workspaces.map(
-                (workspace) => workspace.userId,
-            );
-
-            const task = await this.tasksRepository.findOne({
-                where: {
-                    id,
-                    workspaceId: In(workspacesUserIds),
-                },
-            });
-
-            if (!task) {
-                throw new NotFoundException('Task not found!');
-            }
-
-            return this.workspacesRepository.update(id, taskUpdateRequestDto);
         }
+
+        const workspaces = await this.workspacesRepository.find({
+            where: { userId: user.id },
+        });
+
+        if (workspaces.length) {
+            throw new NotFoundException('Workspaces not found!');
+        }
+
+        const workspacesUserIds = workspaces.map(
+            (workspace) => workspace.userId,
+        );
+
+        const task = await this.tasksRepository.findOne({
+            where: {
+                id,
+                workspaceId: In(workspacesUserIds),
+            },
+        });
+
+        if (!task) {
+            throw new NotFoundException('Task not found!');
+        }
+
+        return this.workspacesRepository.update(id, taskUpdateRequestDto);
     }
 
     async updatePosTask(
@@ -140,34 +141,33 @@ export class TaskService {
                 taskUpdatePositionRequestDto.id,
                 taskUpdatePositionRequestDto,
             );
-        } else {
-            const workspaces = await this.workspacesRepository.find({
-                where: { userId: user.id },
-            });
-
-            if (workspaces.length) {
-                throw new NotFoundException('Workspaces not found!');
-            }
-
-            const workspacesUserIds = workspaces.map(
-                (workspace) => workspace.userId,
-            );
-
-            const task = await this.tasksRepository.findOne({
-                where: {
-                    id: taskUpdatePositionRequestDto.id,
-                    workspaceId: In(workspacesUserIds),
-                },
-            });
-
-            if (!task) {
-                throw new NotFoundException('Task not found!');
-            }
-
-            return this.tasksRepository.update(
-                taskUpdatePositionRequestDto.id,
-                taskUpdatePositionRequestDto,
-            );
         }
+        const workspaces = await this.workspacesRepository.find({
+            where: { userId: user.id },
+        });
+
+        if (workspaces.length) {
+            throw new NotFoundException('Workspaces not found!');
+        }
+
+        const workspacesUserIds = workspaces.map(
+            (workspace) => workspace.userId,
+        );
+
+        const task = await this.tasksRepository.findOne({
+            where: {
+                id: taskUpdatePositionRequestDto.id,
+                workspaceId: In(workspacesUserIds),
+            },
+        });
+
+        if (!task) {
+            throw new NotFoundException('Task not found!');
+        }
+
+        return this.tasksRepository.update(
+            taskUpdatePositionRequestDto.id,
+            taskUpdatePositionRequestDto,
+        );
     }
 }

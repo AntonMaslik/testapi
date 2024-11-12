@@ -47,16 +47,16 @@ export class WorkspaceService {
                 updateWorkspaceDto.id,
                 updateWorkspaceDto,
             );
-        } else {
-            if (updateWorkspaceDto.userId !== user.id) {
-                throw new ForbiddenException('Not access!');
-            }
-
-            return this.workspacesRepository.update(
-                updateWorkspaceDto.id,
-                updateWorkspaceDto,
-            );
         }
+
+        if (updateWorkspaceDto.userId !== user.id) {
+            throw new ForbiddenException('Not access!');
+        }
+
+        return this.workspacesRepository.update(
+            updateWorkspaceDto.id,
+            updateWorkspaceDto,
+        );
     }
 
     async deleteWorkspaceById(
@@ -75,17 +75,17 @@ export class WorkspaceService {
             }
 
             return this.workspacesRepository.softRemove(workspace);
-        } else {
-            const workspace = await this.workspacesRepository.findOne({
-                where: { id: id, userId: user.id },
-            });
-
-            if (!workspace) {
-                throw new NotFoundException('Not find workspace!');
-            }
-
-            return this.workspacesRepository.softRemove(workspace);
         }
+
+        const workspace = await this.workspacesRepository.findOne({
+            where: { id: id, userId: user.id },
+        });
+
+        if (!workspace) {
+            throw new NotFoundException('Not find workspace!');
+        }
+
+        return this.workspacesRepository.softRemove(workspace);
     }
 
     async getTasksInWorkspaceById(
@@ -98,25 +98,23 @@ export class WorkspaceService {
                     workspaceId: id,
                 },
             });
-        } else {
-            const workspaces = await this.workspacesRepository.find({
-                where: {
-                    userId: user.id,
-                },
-            });
-
-            if (workspaces.length) {
-                throw new NotFoundException('Workspace not found!');
-            }
-
-            return await this.tasksRepository.find({
-                where: {
-                    workspaceId: In(
-                        workspaces.map((workspace) => workspace.id),
-                    ),
-                },
-            });
         }
+
+        const workspaces = await this.workspacesRepository.find({
+            where: {
+                userId: user.id,
+            },
+        });
+
+        if (workspaces.length) {
+            throw new NotFoundException('Workspace not found!');
+        }
+
+        return await this.tasksRepository.find({
+            where: {
+                workspaceId: In(workspaces.map((workspace) => workspace.id)),
+            },
+        });
     }
 
     async getWorkspaceBasicInfoById(
@@ -146,40 +144,38 @@ export class WorkspaceService {
                 countTaskNotCompleted: basicInfo.notCompletedTasks,
                 countTaskCompleted: basicInfo.completedTasks,
             };
-        } else {
-            const workspace = await this.workspacesRepository.findOne({
-                where: { id: id },
-            });
-
-            if (!workspace || user.id !== workspace.userId) {
-                throw new ForbiddenException(
-                    'Not access or not find workspace!',
-                );
-            }
-
-            const basicInfo = await this.tasksRepository
-                .createQueryBuilder('tasks')
-                .leftJoin('tasks.workspace', 'workspaces')
-                .select(
-                    'COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
-                    'completedTasks',
-                )
-                .addSelect(
-                    'COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
-                    'notCompletedTasks',
-                )
-                .addSelect('COUNT(tasks.id)', 'countTasks')
-                .where('tasks.workspaceId = :workspaceId', {
-                    workspaceId: id,
-                })
-                .getRawOne();
-
-            return {
-                countTaskAll: basicInfo.countTasks,
-                countTaskNotCompleted: basicInfo.notCompletedTasks,
-                countTaskCompleted: basicInfo.completedTasks,
-            };
         }
+
+        const workspace = await this.workspacesRepository.findOne({
+            where: { id: id },
+        });
+
+        if (!workspace || user.id !== workspace.userId) {
+            throw new ForbiddenException('Not access or not find workspace!');
+        }
+
+        const basicInfo = await this.tasksRepository
+            .createQueryBuilder('tasks')
+            .leftJoin('tasks.workspace', 'workspaces')
+            .select(
+                'COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
+                'completedTasks',
+            )
+            .addSelect(
+                'COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
+                'notCompletedTasks',
+            )
+            .addSelect('COUNT(tasks.id)', 'countTasks')
+            .where('tasks.workspaceId = :workspaceId', {
+                workspaceId: id,
+            })
+            .getRawOne();
+
+        return {
+            countTaskAll: basicInfo.countTasks,
+            countTaskNotCompleted: basicInfo.notCompletedTasks,
+            countTaskCompleted: basicInfo.completedTasks,
+        };
     }
 
     async getWorkspaceOfByUserId(
@@ -190,14 +186,14 @@ export class WorkspaceService {
             return this.workspacesRepository.find({
                 where: { userId: userId },
             });
-        } else {
-            if (user.id !== userId) {
-                throw new ForbiddenException('Not access!');
-            }
-
-            return this.workspacesRepository.find({
-                where: { userId: userId },
-            });
         }
+
+        if (user.id !== userId) {
+            throw new ForbiddenException('Not access!');
+        }
+
+        return this.workspacesRepository.find({
+            where: { userId: userId },
+        });
     }
 }
