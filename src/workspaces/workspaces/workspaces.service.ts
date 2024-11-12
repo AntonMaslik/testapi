@@ -71,7 +71,7 @@ export class WorkspaceService {
         if (isAdminStatus) {
             const workspace = await this.workspacesRepository.findOne({
                 where: {
-                    id: id,
+                    id,
                 },
             });
 
@@ -83,7 +83,7 @@ export class WorkspaceService {
         }
 
         const workspace = await this.workspacesRepository.findOne({
-            where: { id: id, userId: user.id },
+            where: { id, userId: user.id },
         });
 
         if (!workspace) {
@@ -156,7 +156,7 @@ export class WorkspaceService {
         }
 
         const workspace = await this.workspacesRepository.findOne({
-            where: { id: id },
+            where: { id },
         });
 
         if (!workspace || user.id !== workspace.userId) {
@@ -195,7 +195,7 @@ export class WorkspaceService {
 
         if (isAdminStatus) {
             return this.workspacesRepository.find({
-                where: { userId: userId },
+                where: { userId },
             });
         }
 
@@ -204,7 +204,7 @@ export class WorkspaceService {
         }
 
         return this.workspacesRepository.find({
-            where: { userId: userId },
+            where: { userId },
         });
     }
 }

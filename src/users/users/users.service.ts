@@ -36,7 +36,7 @@ export class UserService {
         if (isAdminStatus) {
             return this.usersRepository.findOne({
                 where: {
-                    id: id,
+                    id,
                 },
                 relations: ['roles'],
             });
@@ -48,7 +48,7 @@ export class UserService {
 
         return this.usersRepository.findOne({
             where: {
-                id: id,
+                id,
             },
             relations: ['roles'],
         });
