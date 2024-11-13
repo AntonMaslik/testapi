@@ -1,5 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+import { Observable } from 'rxjs';
 
 @Injectable()
-export class RefreshTokenGuard extends AuthGuard('jwt-refresh') {}
+export class RefreshTokenGuard extends AuthGuard('jwt-refresh') {
+    // canActivate(
+    //     context: ExecutionContext,
+    // ): boolean | Promise<boolean> | Observable<boolean> {
+    //     const request: Request = context.switchToHttp().getRequest();
+    //     const refreshToken: string = request.cookies.refreshToken;
+    //     return false;
+    // }
+}

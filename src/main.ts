@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ClassSerializerInterceptor } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -25,6 +26,8 @@ async function bootstrap() {
 
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api-docs', app, document);
+
+    app.use(cookieParser());
 
     await app.listen(3000);
     console.log(`Application is running on: ${await app.getUrl()}`);
