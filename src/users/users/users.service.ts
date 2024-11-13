@@ -116,24 +116,6 @@ export class UserService {
             (workspace) => workspace.id,
         );
 
-        // const countTask = await this.tasksRepository.count({
-        //     where: {
-        //         workspaceId: In(workspacesUserId),
-        //     },
-        // });
-        // const countTaskCompleted = await this.tasksRepository.count({
-        //     where: {
-        //         workspaceId: In(workspacesUserId),
-        //         completed: true,
-        //     },
-        // });
-        // const countTaskNotCompleted = await this.tasksRepository.count({
-        //     where: {
-        //         workspaceId: In(workspacesUserId),
-        //         completed: false,
-        //     },
-        // });
-
         const [countTask, countTaskCompleted, countTaskNotCompleted] =
             await Promise.all([
                 this.tasksRepository.count({
