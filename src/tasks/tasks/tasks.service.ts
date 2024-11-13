@@ -54,7 +54,7 @@ export class TaskService {
             where: { userId: user.id },
         });
 
-        if (workspaces.length) {
+        if (!workspaces.length) {
             throw new NotFoundException('Workspaces not found!');
         }
 
@@ -81,7 +81,7 @@ export class TaskService {
             where: { userId: user.id },
         });
 
-        if (workspaces.length) {
+        if (!workspaces.length) {
             throw new NotFoundException('Workspaces not found!');
         }
 
@@ -118,7 +118,7 @@ export class TaskService {
             where: { userId: user.id },
         });
 
-        if (workspaces.length) {
+        if (!workspaces.length) {
             throw new NotFoundException('Workspaces not found!');
         }
 
@@ -156,7 +156,7 @@ export class TaskService {
             where: { userId: user.id },
         });
 
-        if (workspaces.length) {
+        if (!workspaces.length) {
             throw new NotFoundException('Workspaces not found!');
         }
 

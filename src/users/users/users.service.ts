@@ -116,26 +116,18 @@ export class UserService {
             (workspace) => workspace.id,
         );
 
-        const [countTask, countTaskCompleted, countTaskNotCompleted] =
-            await Promise.all([
-                this.tasksRepository.count({
-                    where: {
-                        workspaceId: In(workspacesUserId),
-                    },
-                }),
-                this.tasksRepository.count({
-                    where: {
-                        workspaceId: In(workspacesUserId),
-                        completed: true,
-                    },
-                }),
-                this.tasksRepository.count({
-                    where: {
-                        workspaceId: In(workspacesUserId),
-                        completed: false,
-                    },
-                }),
-            ]);
+        const { countTask, countTaskCompleted, countTaskNotCompleted } =
+            await this.tasksRepository
+                .createQueryBuilder('task')
+                .select([
+                    'COUNT(task.id) AS "countTask"',
+                    'SUM(CASE WHEN task.completed = true THEN 1 ELSE 0 END) AS "countTaskCompleted"',
+                    'SUM(CASE WHEN task.completed = false THEN 1 ELSE 0 END) AS "countTaskNotCompleted"',
+                ])
+                .where('task.workspaceId IN (:...workspacesUserId)', {
+                    workspacesUserId,
+                })
+                .getRawOne();
 
         const [tasksLast30Days, tasksLast7Days, tasksLast24Hours] =
             await Promise.all([
