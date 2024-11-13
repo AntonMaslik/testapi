@@ -130,26 +130,22 @@ export class UserService {
                 .getRawOne();
 
         const [tasksLast30Days, tasksLast7Days, tasksLast24Hours] =
-            await Promise.all([
-                this.tasksRepository.count({
-                    where: {
-                        workspaceId: In(workspacesUserId),
-                        createdAt: MoreThan(last30Days),
-                    },
-                }),
-                this.tasksRepository.count({
-                    where: {
-                        workspaceId: In(workspacesUserId),
-                        createdAt: MoreThan(last7Days),
-                    },
-                }),
-                this.tasksRepository.count({
-                    where: {
-                        workspaceId: In(workspacesUserId),
-                        createdAt: MoreThan(last24Hours),
-                    },
-                }),
-            ]);
+            await this.tasksRepository
+                .createQueryBuilder('tasks')
+                .select([
+                    '(CASE WHEN tasks.createdAt > :last30Days THEN 1 ELSE 0 END) AS "tasksLast30Days"',
+                    '(CASE WHEN tasks.createdAt > :last7Days THEN 1 ELSE 0 END) AS "tasksLast7Days"',
+                    '(CASE WHEN tasks.createdAt > :last24Hours THEN 1 ELSE 0 END) AS "tasksLast24Hours"',
+                ])
+                .where('tasks.workspaceId IN (:...workspacesUserId)', {
+                    workspacesUserId,
+                })
+                .setParameters({
+                    last30Days,
+                    last7Days,
+                    last24Hours,
+                })
+                .getRawMany();
 
         return {
             countTaskAll: countTask,
