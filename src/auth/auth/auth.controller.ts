@@ -21,12 +21,13 @@ export class AuthController {
         @Body() signUpDto: SignUpDto,
         @Res({ passthrough: true }) res: Response,
     ): Promise<{ accessToken }> {
-        const tokens = await this.authService.signUp(signUpDto);
+        const { accessToken, refreshToken } =
+            await this.authService.signUp(signUpDto);
 
-        res.cookie('refreshToken', tokens.refreshToken, COOKIE_OPTIONS);
+        res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 
         return {
-            accessToken: tokens.accessToken,
+            accessToken: accessToken,
         };
     }
 
@@ -36,12 +37,13 @@ export class AuthController {
         @Res({ passthrough: true }) res: Response,
         @Body() signInDto: SignInDto,
     ): Promise<{ accessToken }> {
-        const tokens = await this.authService.signIn(signInDto);
+        const { accessToken, refreshToken } =
+            await this.authService.signIn(signInDto);
 
-        res.cookie('refreshToken', tokens.refreshToken, COOKIE_OPTIONS);
+        res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 
         return {
-            accessToken: tokens.accessToken,
+            accessToken: accessToken,
         };
     }
 
@@ -66,15 +68,13 @@ export class AuthController {
         @ExtractUser() user: UserEntity,
         @Res({ passthrough: true }) res: Response,
     ): Promise<{ accessToken }> {
-        const tokens = await this.authService.refreshTokens(
-            user.id,
-            user.refreshToken,
-        );
+        const { accessToken, refreshToken } =
+            await this.authService.refreshTokens(user.id, user.refreshToken);
 
-        res.cookie('refreshToken', tokens.refreshToken, COOKIE_OPTIONS);
+        res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 
         return {
-            accessToken: tokens.accessToken,
+            accessToken: accessToken,
         };
     }
 }
