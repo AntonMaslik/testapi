@@ -30,13 +30,13 @@ export class WorkspaceService {
 
         if (isAdminStatus) {
             return this.workspacesRepository.save(createWorkspaceDto);
-        } else {
-            if (createWorkspaceDto.userId !== user.id) {
-                throw new ForbiddenException('Not access!');
-            }
-
-            return this.workspacesRepository.save(createWorkspaceDto);
         }
+
+        if (createWorkspaceDto.userId !== user.id) {
+            throw new ForbiddenException('Not access!');
+        }
+
+        return this.workspacesRepository.save(createWorkspaceDto);
     }
 
     async updateWorkspaceById(
