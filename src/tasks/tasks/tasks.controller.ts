@@ -19,6 +19,8 @@ import { UserEntity } from 'src/users/entity/user.entity';
 import { TaskUpdatePositionRequestDto } from '../dto/task-update-position-request.dto';
 import {
     ApiBearerAuth,
+    ApiForbiddenResponse,
+    ApiNotFoundResponse,
     ApiOperation,
     ApiResponse,
     ApiTags,
@@ -32,8 +34,8 @@ export class TaskController {
     constructor(private tasksServices: TaskService) {}
 
     @ApiOperation({ summary: 'Update task position' })
-    @ApiResponse({ status: 403, description: 'Forbidden.' })
-    @ApiResponse({ status: 404, description: 'Not found' })
+    @ApiForbiddenResponse({ description: 'Forbidden.' })
+    @ApiNotFoundResponse({ description: 'Not found' })
     @ApiResponse({
         status: 200,
         description: 'Update task',
@@ -51,8 +53,8 @@ export class TaskController {
     }
 
     @ApiOperation({ summary: 'Create task' })
-    @ApiResponse({ status: 403, description: 'Forbidden.' })
-    @ApiResponse({ status: 404, description: 'Not found' })
+    @ApiForbiddenResponse({ description: 'Forbidden.' })
+    @ApiNotFoundResponse({ description: 'Not found' })
     @Post()
     createTask(
         @ExtractUser() user: UserEntity,
@@ -62,16 +64,16 @@ export class TaskController {
     }
 
     @ApiOperation({ summary: 'Get task' })
-    @ApiResponse({ status: 403, description: 'Forbidden.' })
-    @ApiResponse({ status: 404, description: 'Not found' })
+    @ApiForbiddenResponse({ description: 'Forbidden.' })
+    @ApiNotFoundResponse({ description: 'Not found' })
     @Get()
     getTasks(@ExtractUser() user: UserEntity): Promise<TaskEntity[]> {
         return this.tasksServices.getTasks(user);
     }
 
     @ApiOperation({ summary: 'Delete task' })
-    @ApiResponse({ status: 403, description: 'Forbidden' })
-    @ApiResponse({ status: 404, description: 'Not found' })
+    @ApiForbiddenResponse({ description: 'Forbidden' })
+    @ApiNotFoundResponse({ description: 'Not found' })
     @Delete(':id')
     deleteTask(
         @ExtractUser() user: UserEntity,
@@ -81,8 +83,8 @@ export class TaskController {
     }
 
     @ApiOperation({ summary: 'Update task' })
-    @ApiResponse({ status: 403, description: 'Forbidden' })
-    @ApiResponse({ status: 404, description: 'Not found' })
+    @ApiForbiddenResponse({ description: 'Forbidden' })
+    @ApiNotFoundResponse({ description: 'Not found' })
     @Put(':id')
     updateTask(
         @ExtractUser() user: UserEntity,

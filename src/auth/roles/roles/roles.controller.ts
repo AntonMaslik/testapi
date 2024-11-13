@@ -6,6 +6,7 @@ import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
 import {
     ApiBearerAuth,
+    ApiForbiddenResponse,
     ApiOperation,
     ApiResponse,
     ApiTags,
@@ -19,7 +20,7 @@ export class RolesController {
     constructor(private rolesService: RolesService) {}
 
     @ApiOperation({ summary: 'Update role user by id (for Admin)' })
-    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiForbiddenResponse({ description: 'Forbidden' })
     @Post('assign-role')
     async assignRole(
         @ExtractUser() user: UserEntity,

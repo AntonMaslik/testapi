@@ -6,7 +6,12 @@ import { Response } from 'express';
 import { UpdateResult } from 'typeorm';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiOperation,
+    ApiResponse,
+    ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { SignUpDto } from '../dto/sign-up-dto';
 import { COOKIE_OPTIONS } from 'src/config/cookie-options.config';
 
@@ -48,7 +53,7 @@ export class AuthController {
     }
 
     @ApiOperation({ summary: 'Logout user' })
-    @ApiResponse({ status: 401, description: 'Not authoraztion' })
+    @ApiUnauthorizedResponse({ description: 'Not authoraztion' })
     @AuthGuard()
     @Post('logout')
     logout(
@@ -61,7 +66,7 @@ export class AuthController {
     }
 
     @ApiOperation({ summary: 'Refresh token user' })
-    @ApiResponse({ status: 401, description: 'Not authoraztion' })
+    @ApiUnauthorizedResponse({ description: 'Not authoraztion' })
     @RefreshGuard()
     @Post('refresh')
     async refreshTokens(

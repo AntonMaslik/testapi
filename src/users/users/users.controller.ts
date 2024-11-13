@@ -16,6 +16,8 @@ import { SummaryInfo } from 'src/types/summary';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import {
     ApiBearerAuth,
+    ApiForbiddenResponse,
+    ApiNotFoundResponse,
     ApiOperation,
     ApiResponse,
     ApiTags,
@@ -29,8 +31,8 @@ export class UserController {
     constructor(private readonly UsersService: UserService) {}
 
     @ApiOperation({ summary: 'Get me' })
-    @ApiResponse({ status: 401, description: 'Not authorization' })
-    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiForbiddenResponse({ description: 'Not authorization' })
+    @ApiNotFoundResponse({ description: 'Not found user' })
     @ApiResponse({
         status: 200,
         description: 'The found user',
@@ -42,8 +44,8 @@ export class UserController {
     }
 
     @ApiOperation({ summary: 'Get user by id' })
-    @ApiResponse({ status: 401, description: 'Not authorization' })
-    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiForbiddenResponse({ description: 'Not authorization' })
+    @ApiNotFoundResponse({ description: 'Not found user' })
     @ApiResponse({
         status: 200,
         description: 'The found user',
@@ -58,8 +60,8 @@ export class UserController {
     }
 
     @ApiOperation({ summary: 'Get info summary by user' })
-    @ApiResponse({ status: 401, description: 'Not authorization' })
-    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiForbiddenResponse({ description: 'Not authorization' })
+    @ApiNotFoundResponse({ description: 'Not found user' })
     @ApiResponse({
         status: 200,
         description: 'The found summary from user',
@@ -73,8 +75,8 @@ export class UserController {
     }
 
     @ApiOperation({ summary: 'Delete user by id' })
-    @ApiResponse({ status: 401, description: 'Not authorization' })
-    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiForbiddenResponse({ description: 'Not authorization' })
+    @ApiNotFoundResponse({ description: 'Not found user' })
     @ApiResponse({
         status: 200,
         description: 'The user deleted',
@@ -89,8 +91,8 @@ export class UserController {
     }
 
     @ApiOperation({ summary: 'Update user by id' })
-    @ApiResponse({ status: 401, description: 'Not authorization' })
-    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiForbiddenResponse({ description: 'Not authorization' })
+    @ApiNotFoundResponse({ description: 'Not found user' })
     @ApiResponse({
         status: 200,
         description: 'The user updated!',

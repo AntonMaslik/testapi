@@ -20,6 +20,8 @@ import { BasicInfo } from 'src/types/basicInfo';
 import { TaskEntity } from 'src/tasks/entity/tasks.entity';
 import {
     ApiBearerAuth,
+    ApiForbiddenResponse,
+    ApiNotFoundResponse,
     ApiOperation,
     ApiResponse,
     ApiTags,
@@ -33,7 +35,7 @@ export class WorkSpaceController {
     constructor(private readonly workspacesService: WorkspaceService) {}
 
     @ApiOperation({ summary: 'Create workspace' })
-    @ApiResponse({ status: 403, description: 'Forbidden' })
+    @ApiForbiddenResponse({ description: 'Forbidden' })
     @Post()
     createWorkspace(
         @ExtractUser() user: UserEntity,
@@ -43,8 +45,8 @@ export class WorkSpaceController {
     }
 
     @ApiOperation({ summary: 'Update workspace' })
-    @ApiResponse({ status: 403, description: 'Forbidden' })
-    @ApiResponse({ status: 404, description: 'Workspace not found!' })
+    @ApiForbiddenResponse({ description: 'Forbidden' })
+    @ApiNotFoundResponse({ description: 'Not found' })
     @Put()
     updateWorkspaceById(
         @ExtractUser() user: UserEntity,
@@ -57,8 +59,8 @@ export class WorkSpaceController {
     }
 
     @ApiOperation({ summary: 'Delete workspace' })
-    @ApiResponse({ status: 401, description: 'Forbidden' })
-    @ApiResponse({ status: 404, description: 'Not found!' })
+    @ApiForbiddenResponse({ description: 'Forbidden' })
+    @ApiNotFoundResponse({ description: 'Not found' })
     @Delete(':id')
     deleteWorkspaceById(
         @ExtractUser() user: UserEntity,
@@ -68,8 +70,8 @@ export class WorkSpaceController {
     }
 
     @ApiOperation({ summary: 'Get tasks in workspace by id' })
-    @ApiResponse({ status: 401, description: 'Forbidden' })
-    @ApiResponse({ status: 404, description: 'Not found!' })
+    @ApiForbiddenResponse({ description: 'Forbidden' })
+    @ApiNotFoundResponse({ description: 'Not found' })
     @Get('tasks/:id')
     getTasksInWorkspaceById(
         @ExtractUser() user: UserEntity,
@@ -79,8 +81,8 @@ export class WorkSpaceController {
     }
 
     @ApiOperation({ summary: 'Get basic info by id' })
-    @ApiResponse({ status: 401, description: 'Forbidden' })
-    @ApiResponse({ status: 404, description: 'Not found!' })
+    @ApiForbiddenResponse({ description: 'Forbidden' })
+    @ApiNotFoundResponse({ description: 'Not found' })
     @Get(':id')
     getWorkspaceBasicInfoById(
         @ExtractUser() user: UserEntity,
@@ -90,8 +92,8 @@ export class WorkSpaceController {
     }
 
     @ApiOperation({ summary: 'Get workspace by user id' })
-    @ApiResponse({ status: 401, description: 'Forbidden' })
-    @ApiResponse({ status: 404, description: 'Not found!' })
+    @ApiForbiddenResponse({ description: 'Forbidden' })
+    @ApiNotFoundResponse({ description: 'Not found' })
     @Get('of/:id')
     getWorkspacesOfByUserId(
         @ExtractUser() user: UserEntity,
