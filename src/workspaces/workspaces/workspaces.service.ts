@@ -133,7 +133,7 @@ export class WorkspaceService {
             throw new NotFoundException('Workspace not found!');
         }
 
-        return await this.tasksRepository.find({
+        return this.tasksRepository.find({
             where: {
                 workspaceId: In(workspaces.map((workspace) => workspace.id)),
             },
