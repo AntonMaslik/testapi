@@ -71,10 +71,7 @@ export class TaskService {
         const isAdminStatus = await isAdmin(user);
 
         if (isAdminStatus) {
-            const task = await this.tasksRepository.findOne({
-                where: { id },
-            });
-            return this.tasksRepository.softRemove(task);
+            return this.tasksRepository.softRemove({ id });
         }
 
         const workspaces = await this.workspacesRepository.find({
