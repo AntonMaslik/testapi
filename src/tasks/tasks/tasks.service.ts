@@ -38,9 +38,9 @@ export class TaskService {
 
         if (!workspace) {
             throw new ForbiddenException('No access to the workspace');
-        } else {
-            return this.tasksRepository.save(taskCreateRequestDto);
         }
+
+        return this.tasksRepository.save(taskCreateRequestDto);
     }
 
     async getTasks(user: UserEntity): Promise<TaskEntity[]> {
