@@ -152,6 +152,7 @@ export class TaskService {
                 taskUpdatePositionRequestDto,
             );
         }
+
         const workspaces = await this.workspacesRepository.find({
             where: { userId: user.id },
         });
