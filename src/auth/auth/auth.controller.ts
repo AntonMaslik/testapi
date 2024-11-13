@@ -9,7 +9,6 @@ import { UserEntity } from 'src/users/entity/user.entity';
 import {
     ApiBearerAuth,
     ApiOperation,
-    ApiResponse,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SignUpDto } from '../dto/sign-up-dto';
@@ -31,9 +30,7 @@ export class AuthController {
 
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 
-        return {
-            accessToken: accessToken,
-        };
+        return accessToken;
     }
 
     @ApiOperation({ summary: 'Login user with email, password' })
@@ -47,9 +44,7 @@ export class AuthController {
 
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 
-        return {
-            accessToken: accessToken,
-        };
+        return accessToken;
     }
 
     @ApiOperation({ summary: 'Logout user' })
@@ -78,8 +73,6 @@ export class AuthController {
 
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 
-        return {
-            accessToken: accessToken,
-        };
+        return accessToken;
     }
 }
