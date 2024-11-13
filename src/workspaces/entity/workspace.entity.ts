@@ -19,7 +19,7 @@ export class WorkspaceEntity extends CommonEntity {
     @Column()
     name: string;
 
-    @ManyToOne(() => UserEntity, (user) => user.id, { onDelete: 'CASCADE' })
+    @ManyToOne(() => UserEntity, (user) => user.id)
     @JoinColumn({ name: 'userId' })
     user: UserEntity;
 

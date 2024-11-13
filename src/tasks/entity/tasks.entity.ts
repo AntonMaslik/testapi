@@ -33,9 +33,7 @@ export class TaskEntity extends CommonEntity {
     @Column()
     position: number;
 
-    @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.id, {
-        onDelete: 'CASCADE',
-    })
+    @ManyToOne(() => WorkspaceEntity, (workspace) => workspace.id)
     @JoinColumn({ name: 'workspaceId' })
     workspace: WorkspaceEntity;
 

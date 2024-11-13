@@ -61,14 +61,34 @@ export class UserService {
             throw new ForbiddenException('No access!');
         }
 
-        const findUser = await this.usersRepository.findOne({
-            where: {
-                id: id,
-            },
-        });
+        const findUser = await this.usersRepository
+            .createQueryBuilder('users')
+            .where('users.id = :id', { id })
+            .getOne();
+
+        const workspacesUser = await this.workspacesRepository
+            .createQueryBuilder('workspaces')
+            .where('workspaces.userId = :id', { id })
+            .getMany();
+
+        const tasksUser = await this.tasksRepository
+            .createQueryBuilder('tasks')
+            .where('tasks.workspaceId IN (:...workspacesUserIds)', {
+                workspacesUserIds: workspacesUser.map(
+                    (workspaces) => workspaces.id,
+                ),
+            })
+            .getMany();
 
         if (!findUser) {
             throw new NotFoundException('User not find!');
+        }
+
+        if (workspacesUser.length) {
+            await Promise.all([
+                this.tasksRepository.softRemove(tasksUser),
+                this.workspacesRepository.softRemove(workspacesUser),
+            ]);
         }
 
         return this.usersRepository.softRemove(findUser);

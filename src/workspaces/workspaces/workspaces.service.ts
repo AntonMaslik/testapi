@@ -79,6 +79,13 @@ export class WorkspaceService {
                 throw new NotFoundException('Not find workspace!');
             }
 
+            const tasksFromWorkspace = await this.workspacesRepository
+                .createQueryBuilder('tasks')
+                .where('tasks.workspaceId = :id', { id })
+                .getMany();
+
+            await this.workspacesRepository.softRemove(tasksFromWorkspace);
+
             return this.workspacesRepository.softRemove(workspace);
         }
 
@@ -88,6 +95,15 @@ export class WorkspaceService {
 
         if (!workspace) {
             throw new NotFoundException('Not find workspace!');
+        }
+
+        const tasksFromWorkspace = await this.workspacesRepository
+            .createQueryBuilder('tasks')
+            .where('tasks.workspaceId = :id', { id })
+            .getMany();
+
+        if (tasksFromWorkspace.length) {
+            await this.workspacesRepository.softRemove(tasksFromWorkspace);
         }
 
         return this.workspacesRepository.softRemove(workspace);
