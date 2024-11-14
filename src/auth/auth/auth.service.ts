@@ -92,9 +92,14 @@ export class AuthService {
         return tokens;
     }
 
-    async logout(userId: number): Promise<boolean> {
-        await this.tokensRepository.softRemove({ userId });
-        return true;
+    async logout(userId: number, refreshToken: string): Promise<TokenEntity> {
+        const token = await this.tokensRepository.findOne({
+            where: {
+                refreshToken: refreshToken,
+                userId,
+            },
+        });
+        return this.tokensRepository.softRemove(token);
     }
 
     async updateRefreshToken(id: number, refreshToken: string): Promise<void> {

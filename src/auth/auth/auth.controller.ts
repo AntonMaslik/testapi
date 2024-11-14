@@ -12,6 +12,7 @@ import {
 } from '@nestjs/swagger';
 import { SignUpDto } from '../dto/sign-up-dto';
 import { COOKIE_OPTIONS } from 'src/config/cookie-options.config';
+import { TokenEntity } from '../tokens/entity/tokens.entity';
 
 @Controller('auth')
 @ApiBearerAuth()
@@ -52,11 +53,15 @@ export class AuthController {
     @Post('logout')
     logout(
         @Res({ passthrough: true }) res: Response,
-        @ExtractUser() user: any,
-    ): Promise<Boolean> {
+        @Req() req: Request,
+        @ExtractUser()
+        user: any,
+    ): Promise<TokenEntity> {
+        const refreshToken = req.cookies.refreshToken;
+
         res.clearCookie('refreshToken');
 
-        return this.authService.logout(user.id);
+        return this.authService.logout(user.id, refreshToken);
     }
 
     @ApiOperation({ summary: 'Refresh token user' })
