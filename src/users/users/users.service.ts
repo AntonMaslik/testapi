@@ -156,6 +156,8 @@ export class UserService {
             })
             .getRawOne();
 
+        summary.workspaces = workspacesUser;
+
         return summary;
     }
 }
