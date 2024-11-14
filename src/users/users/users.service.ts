@@ -136,45 +136,26 @@ export class UserService {
             (workspace) => workspace.id,
         );
 
-        const { countTask, countTaskCompleted, countTaskNotCompleted } =
-            await this.tasksRepository
-                .createQueryBuilder('task')
-                .select([
-                    'COUNT(task.id) AS "countTask"',
-                    'SUM(CASE WHEN task.completed = true THEN 1 ELSE 0 END) AS "countTaskCompleted"',
-                    'SUM(CASE WHEN task.completed = false THEN 1 ELSE 0 END) AS "countTaskNotCompleted"',
-                ])
-                .where('task.workspaceId IN (:...workspacesUserId)', {
-                    workspacesUserId,
-                })
-                .getRawOne();
+        const summary: SummaryInfo = await this.tasksRepository
+            .createQueryBuilder('task')
+            .select([
+                'COUNT(task.id) AS "countTask"',
+                'SUM(CASE WHEN task.completed = true THEN 1 ELSE 0 END) AS "countTaskCompleted"',
+                'SUM(CASE WHEN task.completed = false THEN 1 ELSE 0 END) AS "countTaskNotCompleted"',
+                '(CASE WHEN tasks.createdAt > :last30Days THEN 1 ELSE 0 END) AS "tasksLast30Days"',
+                '(CASE WHEN tasks.createdAt > :last7Days THEN 1 ELSE 0 END) AS "tasksLast7Days"',
+                '(CASE WHEN tasks.createdAt > :last24Hours THEN 1 ELSE 0 END) AS "tasksLast24Hours"',
+            ])
+            .where('task.workspaceId IN (:...workspacesUserId)', {
+                workspacesUserId,
+            })
+            .setParameters({
+                last30Days,
+                last7Days,
+                last24Hours,
+            })
+            .getRawOne();
 
-        const [tasksLast30Days, tasksLast7Days, tasksLast24Hours] =
-            await this.tasksRepository
-                .createQueryBuilder('tasks')
-                .select([
-                    '(CASE WHEN tasks.createdAt > :last30Days THEN 1 ELSE 0 END) AS "tasksLast30Days"',
-                    '(CASE WHEN tasks.createdAt > :last7Days THEN 1 ELSE 0 END) AS "tasksLast7Days"',
-                    '(CASE WHEN tasks.createdAt > :last24Hours THEN 1 ELSE 0 END) AS "tasksLast24Hours"',
-                ])
-                .where('tasks.workspaceId IN (:...workspacesUserId)', {
-                    workspacesUserId,
-                })
-                .setParameters({
-                    last30Days,
-                    last7Days,
-                    last24Hours,
-                })
-                .getRawMany();
-
-        return {
-            countTaskAll: countTask,
-            countTaskCompleted: countTaskCompleted,
-            countTaskNotCompleted: countTaskNotCompleted,
-            countTaskLast24Hours: tasksLast24Hours,
-            countTaskLast7Days: tasksLast7Days,
-            countTaskLast30Days: tasksLast30Days,
-            workspaces: workspacesUser,
-        };
+        return summary;
     }
 }
