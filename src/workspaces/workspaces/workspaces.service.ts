@@ -182,7 +182,7 @@ export class WorkspaceService {
         });
     }
 
-    async getBasicInfo(workspaceId: number): Promise<BasicInfo> {
+    async getBasicInfo(id: number): Promise<BasicInfo> {
         return this.tasksRepository
             .createQueryBuilder('tasks')
             .leftJoin('tasks.workspace', 'workspaces')
@@ -196,7 +196,7 @@ export class WorkspaceService {
             )
             .addSelect('COUNT(tasks.id)', 'countTasks')
             .where('tasks.workspaceId = :workspaceId', {
-                workspaceId,
+                id,
             })
             .getRawOne();
     }
