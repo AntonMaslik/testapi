@@ -147,28 +147,7 @@ export class WorkspaceService {
         const isAdminStatus = await isAdmin(user);
 
         if (isAdminStatus) {
-            const basicInfo = await this.tasksRepository
-                .createQueryBuilder('tasks')
-                .leftJoin('tasks.workspace', 'workspaces')
-                .select(
-                    'COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
-                    'completedTasks',
-                )
-                .addSelect(
-                    'COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
-                    'notCompletedTasks',
-                )
-                .addSelect('COUNT(tasks.id)', 'countTasks')
-                .where('tasks.workspaceId = :workspaceId', {
-                    workspaceId: id,
-                })
-                .getRawOne();
-
-            return {
-                countTaskAll: basicInfo.countTasks,
-                countTaskNotCompleted: basicInfo.notCompletedTasks,
-                countTaskCompleted: basicInfo.completedTasks,
-            };
+            return this.getBasicInfo(id);
         }
 
         const workspace = await this.workspacesRepository.findOne({
@@ -179,28 +158,7 @@ export class WorkspaceService {
             throw new ForbiddenException('Not access or not find workspace!');
         }
 
-        const basicInfo = await this.tasksRepository
-            .createQueryBuilder('tasks')
-            .leftJoin('tasks.workspace', 'workspaces')
-            .select(
-                'COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
-                'completedTasks',
-            )
-            .addSelect(
-                'COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
-                'notCompletedTasks',
-            )
-            .addSelect('COUNT(tasks.id)', 'countTasks')
-            .where('tasks.workspaceId = :workspaceId', {
-                workspaceId: id,
-            })
-            .getRawOne();
-
-        return {
-            countTaskAll: basicInfo.countTasks,
-            countTaskNotCompleted: basicInfo.notCompletedTasks,
-            countTaskCompleted: basicInfo.completedTasks,
-        };
+        return this.getBasicInfo(id);
     }
 
     async getWorkspaceOfByUserId(
@@ -222,5 +180,24 @@ export class WorkspaceService {
         return this.workspacesRepository.find({
             where: { userId },
         });
+    }
+
+    async getBasicInfo(workspaceId: number): Promise<BasicInfo> {
+        return this.tasksRepository
+            .createQueryBuilder('tasks')
+            .leftJoin('tasks.workspace', 'workspaces')
+            .select(
+                'COUNT(CASE WHEN tasks.completed = true THEN 1 END)',
+                'completedTasks',
+            )
+            .addSelect(
+                'COUNT(CASE WHEN tasks.completed = false THEN 1 END)',
+                'notCompletedTasks',
+            )
+            .addSelect('COUNT(tasks.id)', 'countTasks')
+            .where('tasks.workspaceId = :workspaceId', {
+                workspaceId,
+            })
+            .getRawOne();
     }
 }
