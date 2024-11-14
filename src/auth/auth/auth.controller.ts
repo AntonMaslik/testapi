@@ -1,9 +1,8 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto } from '../dto/sign-in-dto';
 import { AuthGuard, RefreshGuard } from 'src/decorators/guards.decorators';
-import { Response } from 'express';
-import { UpdateResult } from 'typeorm';
+import { Request, Response } from 'express';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
 import {
@@ -54,7 +53,7 @@ export class AuthController {
     logout(
         @Res({ passthrough: true }) res: Response,
         @ExtractUser() user: any,
-    ): Promise<UpdateResult> {
+    ): Promise<Boolean> {
         res.clearCookie('refreshToken');
 
         return this.authService.logout(user.id);
@@ -67,9 +66,13 @@ export class AuthController {
     async refreshTokens(
         @ExtractUser() user: UserEntity,
         @Res({ passthrough: true }) res: Response,
+        @Req() req: Request,
     ): Promise<{ accessToken }> {
         const { accessToken, refreshToken } =
-            await this.authService.refreshTokens(user.id, user.refreshToken);
+            await this.authService.refreshTokens(
+                user,
+                req.cookies.refreshToken,
+            );
 
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 

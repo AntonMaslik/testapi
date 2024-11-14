@@ -15,6 +15,7 @@ import { RolesController } from './roles/roles/roles.controller';
 import { TaskEntity } from 'src/tasks/entity/tasks.entity';
 import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
 import jwtConfig from 'src/config/jwt.config';
+import { TokenEntity } from './tokens/entity/tokens.entity';
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import jwtConfig from 'src/config/jwt.config';
             RolesEntity,
             WorkspaceEntity,
             TaskEntity,
+            TokenEntity,
         ]),
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.register({}),

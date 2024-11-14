@@ -4,7 +4,7 @@ import {
     ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UserEntity } from '../../users/entity/user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -14,12 +14,16 @@ import { ConfigService } from '@nestjs/config';
 import { SignInDto } from '../dto/sign-in-dto';
 import { Role } from '../roles/roles/roles.enum';
 import { RolesEntity } from '../roles/entity/roles.entity';
+import { TokenEntity } from '../tokens/entity/tokens.entity';
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectRepository(UserEntity)
         private usersRepository: Repository<UserEntity>,
+
+        @InjectRepository(TokenEntity)
+        private tokensRepository: Repository<TokenEntity>,
 
         @InjectRepository(RolesEntity)
         private rolesRepository: Repository<RolesEntity>,
@@ -50,7 +54,6 @@ export class AuthService {
             email: signUpDto.email,
             name: signUpDto.name,
             password: hashedPassword,
-            refreshToken: null,
             roles: defaultRole,
         });
         const tokens = await this.getTokens(newUser.id, newUser.name);
@@ -87,35 +90,35 @@ export class AuthService {
         return tokens;
     }
 
-    async logout(userId: number): Promise<UpdateResult> {
-        return this.usersRepository.update(userId, { refreshToken: null });
+    async logout(userId: number): Promise<boolean> {
+        await this.tokensRepository.softRemove({ userId });
+        return true;
     }
 
     async updateRefreshToken(id: number, refreshToken: string): Promise<void> {
         const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
-        await this.usersRepository.update(id, {
+        await this.tokensRepository.save({
             refreshToken: hashedRefreshToken,
+            userId: id,
         });
     }
 
     async refreshTokens(
-        userId: number,
+        user: UserEntity,
         refreshToken: string,
     ): Promise<{ accessToken; refreshToken }> {
-        const user = await this.usersRepository.findOne({
-            where: {
-                id: userId,
-            },
-        });
-
-        if (!user || !user.refreshToken) {
+        if (!refreshToken) {
             throw new ForbiddenException('Access Denied');
         }
 
+        const tokenInfo = await this.tokensRepository.findOne({
+            where: { refreshToken: refreshToken },
+        });
+
         const hash = await bcrypt.hash(refreshToken, 10);
         const refreshTokenMatches = await bcrypt.compare(
-            user.refreshToken,
+            tokenInfo.refreshToken,
             hash,
         );
 

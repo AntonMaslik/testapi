@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 import { CommonEntity } from 'src/common/common.entity';
-import { UserEntity } from 'src/users/entity/user.entity';
 import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
 import {
     PrimaryGeneratedColumn,

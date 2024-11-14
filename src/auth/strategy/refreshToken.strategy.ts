@@ -33,10 +33,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     }
 
     async validate(req: Request, payload: JwtPayload) {
-        const refreshToken = req
-            .get('Authorization')
-            .replace('Bearer', '')
-            .trim();
+        const refreshToken = req.cookies.refreshToken;
 
         const foundUser = await this.usersRepository.findOne({
             where: { id: payload.sub },
@@ -47,6 +44,6 @@ export class RefreshTokenStrategy extends PassportStrategy(
             throw new NotFoundException('User not found!');
         }
 
-        return { ...payload, refreshToken, userDb: foundUser };
+        return { userDb: foundUser };
     }
 }
