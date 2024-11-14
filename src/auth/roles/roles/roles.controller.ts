@@ -8,9 +8,10 @@ import {
     ApiBearerAuth,
     ApiForbiddenResponse,
     ApiOperation,
-    ApiResponse,
     ApiTags,
 } from '@nestjs/swagger';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from './roles.enum';
 
 @AuthGuard()
 @ApiTags('Roles')
@@ -21,6 +22,7 @@ export class RolesController {
 
     @ApiOperation({ summary: 'Update role user by id (for Admin)' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
+    @Roles(Role.ADMIN)
     @Post('assign-role')
     async assignRole(
         @ExtractUser() user: UserEntity,

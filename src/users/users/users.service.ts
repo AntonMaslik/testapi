@@ -55,12 +55,6 @@ export class UserService {
     }
 
     async deleteUserById(user: UserEntity, id: number): Promise<UserEntity> {
-        const isAdminStatus = await isAdmin(user);
-
-        if (!isAdminStatus) {
-            throw new ForbiddenException('No access!');
-        }
-
         const findUser = await this.usersRepository
             .createQueryBuilder('users')
             .where('users.id = :id', { id })
@@ -112,16 +106,7 @@ export class UserService {
         return this.usersRepository.update(id, userUpdateRequestDto);
     }
 
-    async getUserByIdSummary(
-        user: UserEntity,
-        id: number,
-    ): Promise<SummaryInfo> {
-        const isAdminStatus = await isAdmin(user);
-
-        if (!isAdminStatus) {
-            throw new ForbiddenException('Not access!');
-        }
-
+    async getUserByIdSummary(id: number): Promise<SummaryInfo> {
         const now = new Date();
         const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);

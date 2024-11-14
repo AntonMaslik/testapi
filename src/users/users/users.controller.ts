@@ -22,6 +22,8 @@ import {
     ApiResponse,
     ApiTags,
 } from '@nestjs/swagger';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/auth/roles/roles/roles.enum';
 
 @AuthGuard()
 @ApiTags('Users')
@@ -66,12 +68,12 @@ export class UserController {
         status: 200,
         description: 'The found summary from user',
     })
+    @Roles(Role.ADMIN)
     @Get('summary/:id')
     getUserByIdSummary(
-        @ExtractUser() user: UserEntity,
         @Param('id', ParseIntPipe) id: number,
     ): Promise<SummaryInfo> {
-        return this.UsersService.getUserByIdSummary(user, id);
+        return this.UsersService.getUserByIdSummary(id);
     }
 
     @ApiOperation({ summary: 'Delete user by id' })
@@ -82,6 +84,7 @@ export class UserController {
         description: 'The user deleted',
         type: UserEntity,
     })
+    @Roles(Role.ADMIN)
     @Delete(':id')
     deleteUserById(
         @ExtractUser() user: UserEntity,

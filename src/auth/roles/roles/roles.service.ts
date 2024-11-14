@@ -24,12 +24,6 @@ export class RolesService {
         user: UserEntity,
         roleUpdateDto: roleUpdateDto,
     ): Promise<UserEntity> {
-        const isAdminStatus = await isAdmin(user);
-
-        if (!isAdminStatus) {
-            throw new ForbiddenException('Not access!');
-        }
-
         const userFound = await this.usersRepository.findOne({
             where: {
                 id: roleUpdateDto.id,
