@@ -60,7 +60,7 @@ export class AuthController {
     }
 
     @ApiOperation({ summary: 'Refresh token user' })
-    @ApiUnauthorizedResponse({ description: 'Not authoraztion' })
+    @ApiUnauthorizedResponse({ description: 'Not authorization' })
     @RefreshGuard()
     @Post('refresh')
     async refreshTokens(

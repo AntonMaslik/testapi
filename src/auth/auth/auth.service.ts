@@ -85,6 +85,8 @@ export class AuthService {
 
         const tokens = await this.getTokens(user.id, user.name);
 
+        console.log(tokens);
+
         await this.updateRefreshToken(user.id, tokens.refreshToken);
 
         return tokens;
@@ -96,10 +98,8 @@ export class AuthService {
     }
 
     async updateRefreshToken(id: number, refreshToken: string): Promise<void> {
-        const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
-
         await this.tokensRepository.save({
-            refreshToken: hashedRefreshToken,
+            refreshToken: refreshToken,
             userId: id,
         });
     }
@@ -122,7 +122,7 @@ export class AuthService {
             hash,
         );
 
-        if (!refreshTokenMatches) {
+        if (!refreshTokenMatches || !tokenInfo) {
             throw new ForbiddenException('Access Denied');
         }
 
