@@ -117,21 +117,25 @@ export class UserService {
             .where('workspaces.userId = :userId', { userId: id })
             .getMany();
 
+        if (!workspacesUser.length) {
+            throw new NotFoundException('Workspaces not find!');
+        }
+
         const workspacesUserId = workspacesUser.map(
             (workspace) => workspace.id,
         );
 
         const summary: SummaryInfo = await this.tasksRepository
-            .createQueryBuilder('task')
+            .createQueryBuilder('tasks')
             .select([
-                'COUNT(task.id) AS "countTask"',
-                'SUM(CASE WHEN task.completed = true THEN 1 ELSE 0 END) AS "countTaskCompleted"',
-                'SUM(CASE WHEN task.completed = false THEN 1 ELSE 0 END) AS "countTaskNotCompleted"',
-                '(CASE WHEN tasks.createdAt > :last30Days THEN 1 ELSE 0 END) AS "tasksLast30Days"',
-                '(CASE WHEN tasks.createdAt > :last7Days THEN 1 ELSE 0 END) AS "tasksLast7Days"',
-                '(CASE WHEN tasks.createdAt > :last24Hours THEN 1 ELSE 0 END) AS "tasksLast24Hours"',
+                'COUNT(tasks.id) AS "countTask"',
+                'SUM(CASE WHEN tasks.completed = true THEN 1 ELSE 0 END) AS "countTaskCompleted"',
+                'SUM(CASE WHEN tasks.completed = false THEN 1 ELSE 0 END) AS "countTaskNotCompleted"',
+                'SUM(CASE WHEN tasks.createdAt > :last30Days THEN 1 ELSE 0 END) AS "tasksLast30Days"',
+                'SUM(CASE WHEN tasks.createdAt > :last7Days THEN 1 ELSE 0 END) AS "tasksLast7Days"',
+                'SUM(CASE WHEN tasks.createdAt > :last24Hours THEN 1 ELSE 0 END) AS "tasksLast24Hours"',
             ])
-            .where('task.workspaceId IN (:...workspacesUserId)', {
+            .where('tasks.workspaceId IN (:...workspacesUserId)', {
                 workspacesUserId,
             })
             .setParameters({

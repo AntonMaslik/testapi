@@ -12,6 +12,9 @@ export class RolesGuard implements CanActivate {
 
     canActivate(context: ExecutionContext): boolean {
         const { user } = context.switchToHttp().getRequest();
+
+        const roles = user.userDb.roles;
+
         const requiredRoles = new Set(
             this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
                 context.getHandler(),
@@ -19,7 +22,11 @@ export class RolesGuard implements CanActivate {
             ]),
         );
 
-        for (const role of user.roles) {
+        if (!requiredRoles.size) {
+            requiredRoles.add(Role.USER);
+        }
+
+        for (const role of roles) {
             if (requiredRoles.has(role.name)) {
                 return true;
             }
