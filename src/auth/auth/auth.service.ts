@@ -2,9 +2,10 @@ import {
     BadRequestException,
     Injectable,
     ForbiddenException,
+    NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { UserEntity } from '../../users/entity/user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -100,6 +101,21 @@ export class AuthService {
             },
         });
         return this.tokensRepository.softRemove(token);
+    }
+
+    async logoutAllExceptionToCurrent(userId: number, refreshToken: string) {
+        const tokens = await this.tokensRepository.find({
+            where: {
+                userId: userId,
+                refreshToken: Not(refreshToken),
+            },
+        });
+
+        if (!tokens.length) {
+            throw new NotFoundException('Tokens not find!');
+        }
+
+        return this.tokensRepository.softRemove(tokens);
     }
 
     async updateRefreshToken(id: number, refreshToken: string): Promise<void> {

@@ -57,11 +57,11 @@ export class AuthController {
         @ExtractUser()
         user: any,
     ): Promise<TokenEntity> {
-        const refreshToken = req.cookies.refreshToken;
+        const currentRefreshToken = req.cookies.refreshToken;
 
         res.clearCookie('refreshToken');
 
-        return this.authService.logout(user.id, refreshToken);
+        return this.authService.logout(user.id, currentRefreshToken);
     }
 
     @ApiOperation({ summary: 'Refresh token user' })
@@ -82,5 +82,21 @@ export class AuthController {
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 
         return { accessToken };
+    }
+
+    @ApiOperation({ summary: 'Logout all sessions exception to current' })
+    @ApiUnauthorizedResponse({ description: 'Not authorization' })
+    @RefreshGuard()
+    @Post('logout-all-sessions')
+    async logoutAllExceptionToCurrent(
+        @ExtractUser() user: UserEntity,
+        @Req() req: Request,
+    ): Promise<TokenEntity[]> {
+        const currentRefreshToken = req.cookies.refreshToken;
+
+        return this.authService.logoutAllExceptionToCurrent(
+            user.id,
+            currentRefreshToken,
+        );
     }
 }
