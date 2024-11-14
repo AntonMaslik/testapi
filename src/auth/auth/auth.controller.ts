@@ -30,7 +30,7 @@ export class AuthController {
 
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 
-        return accessToken;
+        return { accessToken };
     }
 
     @ApiOperation({ summary: 'Login user with email, password' })
@@ -44,7 +44,7 @@ export class AuthController {
 
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 
-        return accessToken;
+        return { accessToken };
     }
 
     @ApiOperation({ summary: 'Logout user' })
@@ -73,6 +73,6 @@ export class AuthController {
 
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 
-        return accessToken;
+        return { accessToken };
     }
 }
