@@ -29,11 +29,6 @@ export class UserEntity extends CommonEntity {
     @Column()
     password: string;
 
-    @ApiProperty()
-    @Exclude()
-    @Column({ nullable: true })
-    refreshToken: string;
-
     @ManyToMany(() => RolesEntity, (role) => role.users, {
         onDelete: 'CASCADE',
     })

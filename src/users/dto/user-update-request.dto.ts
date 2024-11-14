@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsEmail, MinLength } from 'class-validator';
+import { IsNotEmpty, IsEmail, MinLength, IsArray } from 'class-validator';
 
 export class UserUpdateRequestDto {
     @IsNotEmpty()
@@ -11,6 +11,4 @@ export class UserUpdateRequestDto {
     @IsNotEmpty()
     @MinLength(6)
     password: string;
-
-    refreshToken: string;
 }
