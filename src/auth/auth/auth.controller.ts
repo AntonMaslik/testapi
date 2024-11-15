@@ -63,7 +63,7 @@ export class AuthController {
 
         res.clearCookie('refreshToken');
 
-        return this.authService.logout(user.id, currentRefreshToken);
+        return this.authService.logout(currentRefreshToken);
     }
 
     @ApiOperation({ summary: 'Refresh token user' })
