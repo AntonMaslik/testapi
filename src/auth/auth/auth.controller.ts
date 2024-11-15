@@ -91,13 +91,11 @@ export class AuthController {
     @RefreshGuard()
     @Post('invalidate-all-tokens')
     async invalidateAllTokensWithException(
-        @ExtractUser() user: UserEntity,
         @Req() req: Request,
     ): Promise<Boolean> {
         const currentRefreshToken = req.cookies.refreshToken;
 
         return this.authService.invalidateAllTokensWithException(
-            user.id,
             currentRefreshToken,
         );
     }

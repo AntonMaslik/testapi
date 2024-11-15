@@ -110,12 +110,10 @@ export class AuthService {
     }
 
     async invalidateAllTokensWithException(
-        userId: number,
         refreshToken: string,
     ): Promise<Boolean> {
         const tokens = await this.tokensRepository.find({
             where: {
-                userId: userId,
                 refreshToken: Not(refreshToken),
             },
         });
@@ -123,6 +121,8 @@ export class AuthService {
         if (!tokens.length) {
             throw new NotFoundException('Tokens not find!');
         }
+
+        this.tokensRepository.softRemove(tokens);
 
         return true;
     }
