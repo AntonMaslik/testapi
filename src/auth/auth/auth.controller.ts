@@ -97,7 +97,7 @@ export class AuthController {
     ): Promise<TokenEntity[]> {
         const currentRefreshToken = req.cookies.refreshToken;
 
-        return this.authService.logoutAllExceptionToCurrent(
+        return this.authService.invalidateAllTokensWithException(
             user.id,
             currentRefreshToken,
         );
