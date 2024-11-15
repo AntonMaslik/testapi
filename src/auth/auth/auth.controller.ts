@@ -51,7 +51,7 @@ export class AuthController {
     }
 
     @ApiOperation({ summary: 'Logout user' })
-    @ApiUnauthorizedResponse({ description: 'Not authoraztion' })
+    @ApiUnauthorizedResponse({ description: 'Not authorization' })
     @AuthGuard()
     @Post('logout')
     logout(
