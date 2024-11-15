@@ -1,18 +1,21 @@
 import { Body, Controller, Post, Req, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
+
 import { AuthService } from './auth.service';
 import { SignInDto } from '../dto/sign-in-dto';
 import { AuthGuard, RefreshGuard } from 'src/decorators/guards.decorators';
-import { Request, Response } from 'express';
+import { SignUpDto } from '../dto/sign-up-dto';
+import { COOKIE_OPTIONS } from 'src/config/cookie-options.config';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
+
 import { UserEntity } from 'src/users/entity/user.entity';
+import { TokenEntity } from '../tokens/entity/tokens.entity';
+
 import {
     ApiBearerAuth,
     ApiOperation,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { SignUpDto } from '../dto/sign-up-dto';
-import { COOKIE_OPTIONS } from 'src/config/cookie-options.config';
-import { TokenEntity } from '../tokens/entity/tokens.entity';
 
 @Controller('auth')
 @ApiBearerAuth()

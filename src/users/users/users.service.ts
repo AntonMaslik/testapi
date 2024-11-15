@@ -3,13 +3,18 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
+
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '../entity/user.entity';
-import { In, MoreThan, Repository, UpdateResult } from 'typeorm';
+
+import { Repository, UpdateResult } from 'typeorm';
+
 import { UserCreateRequestDto } from '../dto/user-create-request.dto';
 import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
+
 import { TaskEntity } from 'src/tasks/entity/tasks.entity';
+import { UserEntity } from '../entity/user.entity';
 import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
+
 import { SummaryInfo } from 'src/types/summary';
 import { isAdmin } from 'src/auth/roles/helpers/helperIsAdmin';
 
@@ -18,8 +23,10 @@ export class UserService {
     constructor(
         @InjectRepository(UserEntity)
         private usersRepository: Repository<UserEntity>,
+
         @InjectRepository(TaskEntity)
         private tasksRepository: Repository<TaskEntity>,
+
         @InjectRepository(WorkspaceEntity)
         private workspacesRepository: Repository<WorkspaceEntity>,
     ) {}

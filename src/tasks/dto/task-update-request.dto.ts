@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { IsBoolean, IsNumber, IsString, MaxLength } from 'class-validator';
 
 export class TaskUpdateRequestDto {

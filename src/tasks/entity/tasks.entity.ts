@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
+
 import { CommonEntity } from 'src/common/common.entity';
 import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
+
 import {
     PrimaryGeneratedColumn,
     Column,
@@ -37,7 +38,6 @@ export class TaskEntity extends CommonEntity {
     workspace: WorkspaceEntity;
 
     @ApiProperty()
-    @Exclude()
     @Column()
     workspaceId: number;
 }

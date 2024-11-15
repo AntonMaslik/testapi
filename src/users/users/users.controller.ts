@@ -7,13 +7,7 @@ import {
     ParseIntPipe,
     Put,
 } from '@nestjs/common';
-import { UpdateResult } from 'typeorm';
-import { UserService } from './users.service';
-import { UserEntity } from '../entity/user.entity';
-import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
-import { AuthGuard } from 'src/decorators/guards.decorators';
-import { SummaryInfo } from 'src/types/summary';
-import { ExtractUser } from 'src/decorators/extractUser.decorator';
+
 import {
     ApiBearerAuth,
     ApiForbiddenResponse,
@@ -22,6 +16,19 @@ import {
     ApiResponse,
     ApiTags,
 } from '@nestjs/swagger';
+
+import { UpdateResult } from 'typeorm';
+import { UserService } from './users.service';
+
+import { UserEntity } from '../entity/user.entity';
+
+import { UserUpdateRequestDto } from '../dto/user-update-request.dto';
+
+import { SummaryInfo } from 'src/types/summary';
+
+import { ExtractUser } from 'src/decorators/extractUser.decorator';
+import { AuthGuard } from 'src/decorators/guards.decorators';
+
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/auth/roles/roles/roles.enum';
 

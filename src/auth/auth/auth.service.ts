@@ -4,8 +4,10 @@ import {
     ForbiddenException,
     NotFoundException,
 } from '@nestjs/common';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
+
 import { UserEntity } from '../../users/entity/user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -14,6 +16,7 @@ import { UserService } from 'src/users/users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { SignInDto } from '../dto/sign-in-dto';
 import { Role } from '../roles/roles/roles.enum';
+
 import { RolesEntity } from '../roles/entity/roles.entity';
 import { TokenEntity } from '../tokens/entity/tokens.entity';
 
@@ -84,13 +87,14 @@ export class AuthService {
             throw new BadRequestException('Password is incorrect');
         }
 
-        const tokens = await this.getTokens(user.id, user.name);
+        const { accessToken, refreshToken } = await this.getTokens(
+            user.id,
+            user.name,
+        );
 
-        console.log(tokens);
+        await this.updateRefreshToken(user.id, refreshToken);
 
-        await this.updateRefreshToken(user.id, tokens.refreshToken);
-
-        return tokens;
+        return { accessToken, refreshToken };
     }
 
     async logout(userId: number, refreshToken: string): Promise<TokenEntity> {
@@ -100,6 +104,7 @@ export class AuthService {
                 userId,
             },
         });
+
         return this.tokensRepository.softRemove(token);
     }
 

@@ -1,6 +1,8 @@
 import { Exclude } from 'class-transformer';
+
 import { CommonEntity } from 'src/common/common.entity';
 import { UserEntity } from 'src/users/entity/user.entity';
+
 import {
     Column,
     PrimaryGeneratedColumn,

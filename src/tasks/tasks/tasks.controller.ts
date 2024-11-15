@@ -8,15 +8,21 @@ import {
     Param,
     ParseIntPipe,
 } from '@nestjs/common';
+
 import { TaskCreateRequestDto } from '../dto/task-create-request.dto';
-import { TaskService } from './tasks.service';
-import { TaskEntity } from '../entity/tasks.entity';
 import { TaskUpdateRequestDto } from '../dto/task-update-request.dto';
-import { UpdateResult } from 'typeorm';
+import { TaskUpdatePositionRequestDto } from '../dto/task-update-position-request.dto';
+
+import { TaskService } from './tasks.service';
+
+import { TaskEntity } from '../entity/tasks.entity';
+import { UserEntity } from 'src/users/entity/user.entity';
+
 import { AuthGuard } from 'src/decorators/guards.decorators';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
-import { UserEntity } from 'src/users/entity/user.entity';
-import { TaskUpdatePositionRequestDto } from '../dto/task-update-position-request.dto';
+
+import { UpdateResult } from 'typeorm';
+
 import {
     ApiBearerAuth,
     ApiForbiddenResponse,

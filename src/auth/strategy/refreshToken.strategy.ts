@@ -1,9 +1,13 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+
 import { UserEntity } from 'src/users/entity/user.entity';
+
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { Request } from 'express';
 
 type JwtPayload = {

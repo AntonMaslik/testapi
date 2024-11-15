@@ -3,14 +3,18 @@ import {
     Injectable,
     ForbiddenException,
 } from '@nestjs/common';
+
 import { InjectRepository } from '@nestjs/typeorm';
-import { TaskEntity } from '../entity/tasks.entity';
 import { In, Repository, UpdateResult } from 'typeorm';
+
+import { TaskEntity } from '../entity/tasks.entity';
+import { UserEntity } from 'src/users/entity/user.entity';
+import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
+
 import { TaskCreateRequestDto } from '../dto/task-create-request.dto';
 import { TaskUpdateRequestDto } from '../dto/task-update-request.dto';
-import { WorkspaceEntity } from 'src/workspaces/entity/workspace.entity';
 import { TaskUpdatePositionRequestDto } from '../dto/task-update-position-request.dto';
-import { UserEntity } from 'src/users/entity/user.entity';
+
 import { isAdmin } from 'src/auth/roles/helpers/helperIsAdmin';
 
 @Injectable()
@@ -18,6 +22,7 @@ export class TaskService {
     constructor(
         @InjectRepository(TaskEntity)
         private readonly tasksRepository: Repository<TaskEntity>,
+
         @InjectRepository(WorkspaceEntity)
         private readonly workspacesRepository: Repository<WorkspaceEntity>,
     ) {}

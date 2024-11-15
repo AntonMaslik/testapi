@@ -4,6 +4,7 @@ import {
     DeleteDateColumn,
     UpdateDateColumn,
 } from 'typeorm';
+
 import { classToPlain } from 'class-transformer';
 
 export class CommonEntity extends BaseEntity {

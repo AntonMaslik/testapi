@@ -5,9 +5,12 @@ import {
     ManyToMany,
     JoinTable,
 } from 'typeorm';
-import { RolesEntity } from 'src/auth/roles/entity/roles.entity';
+
 import { Exclude } from 'class-transformer';
+
 import { CommonEntity } from 'src/common/common.entity';
+import { RolesEntity } from 'src/auth/roles/entity/roles.entity';
+
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('users')

@@ -1,17 +1,18 @@
 import { Body, Controller, Post } from '@nestjs/common';
+
 import { roleUpdateDto } from '../dto/role-update-dto';
 import { RolesService } from './roles.service';
 import { AuthGuard } from 'src/decorators/guards.decorators';
-import { ExtractUser } from 'src/decorators/extractUser.decorator';
 import { UserEntity } from 'src/users/entity/user.entity';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from './roles.enum';
+
 import {
     ApiBearerAuth,
     ApiForbiddenResponse,
     ApiOperation,
     ApiTags,
 } from '@nestjs/swagger';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from './roles.enum';
 
 @AuthGuard()
 @ApiTags('Roles')
@@ -24,10 +25,7 @@ export class RolesController {
     @ApiForbiddenResponse({ description: 'Forbidden' })
     @Roles(Role.ADMIN)
     @Post('assign-role')
-    async assignRole(
-        @ExtractUser() user: UserEntity,
-        @Body() roleUpdateDto: roleUpdateDto,
-    ): Promise<UserEntity> {
-        return this.rolesService.updateRoleByIdUser(user, roleUpdateDto);
+    assignRole(@Body() roleUpdateDto: roleUpdateDto): Promise<UserEntity> {
+        return this.rolesService.updateRoleByIdUser(roleUpdateDto);
     }
 }
