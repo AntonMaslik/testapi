@@ -28,12 +28,6 @@ export class RolesGuard implements CanActivate {
 
         const roles = user.userDb.roles;
 
-        for (const role of roles) {
-            if (requiredRoles.has(role.name)) {
-                return true;
-            }
-        }
-
-        return false;
+        return roles.some(({ name }) => requiredRoles.has(name));
     }
 }
