@@ -9,7 +9,6 @@ import { COOKIE_OPTIONS } from 'src/config/cookie-options.config';
 import { ExtractUser } from 'src/decorators/extractUser.decorator';
 
 import { UserEntity } from 'src/users/entity/user.entity';
-import { TokenEntity } from '../tokens/entity/tokens.entity';
 
 import {
     ApiBearerAuth,
@@ -59,7 +58,7 @@ export class AuthController {
         @Req() req: Request,
         @ExtractUser()
         user: UserEntity,
-    ): Promise<TokenEntity> {
+    ): Promise<Boolean> {
         const currentRefreshToken = req.cookies.refreshToken;
 
         res.clearCookie('refreshToken');
@@ -94,7 +93,7 @@ export class AuthController {
     async invalidateAllTokensWithException(
         @ExtractUser() user: UserEntity,
         @Req() req: Request,
-    ): Promise<TokenEntity[]> {
+    ): Promise<Boolean> {
         const currentRefreshToken = req.cookies.refreshToken;
 
         return this.authService.invalidateAllTokensWithException(

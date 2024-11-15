@@ -97,7 +97,7 @@ export class AuthService {
         return { accessToken, refreshToken };
     }
 
-    async logout(userId: number, refreshToken: string): Promise<TokenEntity> {
+    async logout(userId: number, refreshToken: string): Promise<Boolean> {
         const token = await this.tokensRepository.findOne({
             where: {
                 refreshToken: refreshToken,
@@ -105,13 +105,13 @@ export class AuthService {
             },
         });
 
-        return this.tokensRepository.softRemove(token);
+        return true;
     }
 
     async invalidateAllTokensWithException(
         userId: number,
         refreshToken: string,
-    ) {
+    ): Promise<Boolean> {
         const tokens = await this.tokensRepository.find({
             where: {
                 userId: userId,
@@ -123,7 +123,7 @@ export class AuthService {
             throw new NotFoundException('Tokens not find!');
         }
 
-        return this.tokensRepository.softRemove(tokens);
+        return true;
     }
 
     async updateRefreshToken(id: number, refreshToken: string): Promise<void> {
