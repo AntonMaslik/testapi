@@ -12,14 +12,12 @@ services:
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     ports:
-      - '5431:5432'
+      - '5432:5432'
     env_file:
       - .env 
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     container_name: nest-docker-postgres
     environment:
       POSTGRES_HOST: db
