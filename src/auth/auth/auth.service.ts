@@ -108,7 +108,10 @@ export class AuthService {
         return this.tokensRepository.softRemove(token);
     }
 
-    async logoutAllExceptionToCurrent(userId: number, refreshToken: string) {
+    async invalidateAllTokensWithException(
+        userId: number,
+        refreshToken: string,
+    ) {
         const tokens = await this.tokensRepository.find({
             where: {
                 userId: userId,

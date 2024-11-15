@@ -58,7 +58,7 @@ export class AuthController {
         @Res({ passthrough: true }) res: Response,
         @Req() req: Request,
         @ExtractUser()
-        user: any,
+        user: UserEntity,
     ): Promise<TokenEntity> {
         const currentRefreshToken = req.cookies.refreshToken;
 
@@ -91,7 +91,7 @@ export class AuthController {
     @ApiUnauthorizedResponse({ description: 'Not authorization' })
     @RefreshGuard()
     @Post('logout-all-sessions')
-    async logoutAllExceptionToCurrent(
+    async invalidateAllTokensWithException(
         @ExtractUser() user: UserEntity,
         @Req() req: Request,
     ): Promise<TokenEntity[]> {
