@@ -89,7 +89,7 @@ export class AuthController {
     @ApiOperation({ summary: 'Logout all sessions exception to current' })
     @ApiUnauthorizedResponse({ description: 'Not authorization' })
     @RefreshGuard()
-    @Post('logout-all-sessions')
+    @Post('invalidate-all-tokens')
     async invalidateAllTokensWithException(
         @ExtractUser() user: UserEntity,
         @Req() req: Request,
