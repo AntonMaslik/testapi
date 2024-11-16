@@ -1,29 +1,33 @@
 import { Module } from '@nestjs/common';
+
 import { AppController } from './app.controller';
+
 import { AppService } from './app.service';
+
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './user/user.module';
-import { TaskModule } from './task/task.module';
-import { WorkspaceModule } from './workspace/workspace.module';
+
+import { WorkspaceModule } from './workspaces/workspaces.module';
+import { UserModule } from './users/users.module';
+import { TaskModule } from './tasks/tasks.module';
+import { AuthModule } from './auth/auth.module';
+
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import databaseConfig from './config/database.config';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'testuser',
-      password: 'testpass',
-      database: 'testapi',
-      entities: ['**/entity/*.entity{.ts,.js}'],
-      synchronize: true,
-      autoLoadEntities: true,
-    }),
-    UserModule,
-    TaskModule,
-    WorkspaceModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        ConfigModule.forRoot({ envFilePath: `.env`, isGlobal: true }),
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: databaseConfig,
+            inject: [ConfigService],
+        }),
+        UserModule,
+        TaskModule,
+        WorkspaceModule,
+        AuthModule,
+    ],
+    controllers: [AppController],
+    providers: [AppService],
 })
 export class AppModule {}
